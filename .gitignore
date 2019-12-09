@@ -1,0 +1,8 @@
+packages
+bin
+obj
+App_Data
+.vs
+*.nupkg
+*.zip
+*.DotSettings.user
