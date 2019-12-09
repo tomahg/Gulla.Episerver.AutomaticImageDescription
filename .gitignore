@@ -3,6 +3,8 @@ bin
 obj
 App_Data
 .vs
+*.suo
+*.user
 *.nupkg
 *.zip
 *.DotSettings.user
