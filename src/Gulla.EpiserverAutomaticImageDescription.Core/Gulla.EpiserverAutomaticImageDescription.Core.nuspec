@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Gulla.EpiserverAutomaticImageDescription</id>
+    <version>1.0.0</version>
+    <title>Gulla.EpiserverAutomaticImageDescription</title>
+    <authors>Tomas Hensrud Gulla</authors>
+    <owners>Tomas Hensrud Gulla</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Automatically populate properties based on image content.</summary>
+    <copyright>Copyright 2019</copyright>	
+    <repository type="git" url="https://github.com/tomahg/Gulla.EpiserverCensorFaces" branch="master" />
+    <releaseNotes>Initial version.</releaseNotes>
+	<tags>episerver,azure,image,alt-text,description,ocr</tags>
+	<description>Will use Azure Cognitive Services Vision API to analyze images uploaded to Episerver, and populate properties with data describing the images.</description>
+    <dependencies>
+	  <dependency id="EPiServer.Framework" version="11.1.0" />
+	  <dependency id="EPiServer.CMS.AspNet" version="11.1.0" />
+	  <dependency id="EPiServer.CMS.Core" version="11.1.0" />
+	  <dependency id="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" version="5.0.0" />
+	</dependencies>	
+  </metadata>
+</package>
