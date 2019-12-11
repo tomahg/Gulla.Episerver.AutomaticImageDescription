@@ -3,11 +3,12 @@ using EPiServer.Core;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
+using Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Initialization
+namespace Gulla.EpiserverAutomaticImageDescription.Core.Initialization
 {
     [InitializableModule]
-    [ModuleDependency(typeof(InitializationModule))]
+    [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
     public class EventsInitialization : IInitializableModule
     {
         public void Initialize(InitializationEngine context)

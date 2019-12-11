@@ -175,7 +175,7 @@
     <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForBrandsAttribute.cs" />
     <Compile Include="ImageAnalysis\Attributes\ImageRacismAttribute.cs" />
     <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForRacismAttribute.cs" />
-    <Compile Include="ImageAnalysis\Initialization\EventsInitialization.cs" />
+    <Compile Include="Initialization\EventsInitialization.cs" />
     <Compile Include="ImageAnalysis\ImageAnalyzer.cs" />
     <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForDescriptionAttribute.cs" />
     <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForOcrAttribute.cs" />
