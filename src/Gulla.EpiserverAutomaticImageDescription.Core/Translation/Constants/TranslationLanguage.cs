@@ -1,7 +1,7 @@
 ﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants
 {
     // Source: https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support
-    public class Language
+    public class TranslationLanguage
     {
         public const string Afrikaans = "af";
         public const string Arabic = "ar";

@@ -221,7 +221,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
 
             if (descriptionAttribute.LanguageCode != null)
             {
-                description = Translator.TranslateText(new[] { description }, descriptionAttribute.LanguageCode, Language.English).First().Translations.First().Text;
+                description = Translator.TranslateText(new[] { description }, descriptionAttribute.LanguageCode, TranslationLanguage.English).First().Translations.First().Text;
             }
 
             return FormatDescription(description, descriptionAttribute.UpperCaseFirstLetter, descriptionAttribute.EndWithDot);
@@ -235,7 +235,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
                 return tags;
             }
 
-            return Translator.TranslateText(tags, languageCode, Language.English).Select(x => x.Translations).Select(x => x.First().Text);
+            return Translator.TranslateText(tags, languageCode, TranslationLanguage.English).Select(x => x.Translations).Select(x => x.First().Text);
         }
 
         private static IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, PropertyInfo propertyInfo)

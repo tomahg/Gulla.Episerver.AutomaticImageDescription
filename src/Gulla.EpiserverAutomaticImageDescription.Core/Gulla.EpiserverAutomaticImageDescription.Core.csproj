@@ -162,7 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Translation\Auth\AuthToken.cs" />
-    <Compile Include="Translation\Constants\Language.cs" />
+    <Compile Include="Translation\Constants\TranslationLanguage.cs" />
     <Compile Include="Translation\Translator.cs" />
     <Compile Include="Translation\DTO\Alignment.cs" />
     <Compile Include="Translation\DTO\DetectedLanguage.cs" />
