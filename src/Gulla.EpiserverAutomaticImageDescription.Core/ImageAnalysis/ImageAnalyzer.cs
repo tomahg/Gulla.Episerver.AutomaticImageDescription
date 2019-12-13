@@ -209,7 +209,6 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
 
                 if (IsStringProperty(ocrProperty))
                 {
-                    
                     ocrProperty.SetValue(image,string.Join(" ", ocrTranslated));
                 }
             }

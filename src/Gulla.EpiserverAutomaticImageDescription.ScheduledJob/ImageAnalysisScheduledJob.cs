@@ -1,12 +1,29 @@
-﻿using EPiServer.PlugIn;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Castle.Core.Internal;
+using EPiServer;
+using EPiServer.Core;
+using EPiServer.DataAccess;
+using EPiServer.PlugIn;
 using EPiServer.Scheduler;
+using EPiServer.Security;
+using EPiServer.ServiceLocation;
+using Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis;
 
 namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
 {
-    [ScheduledPlugIn(DisplayName = "Analyze all images, and update metadata")]
+    [ScheduledPlugIn(DisplayName = "Analyze all images, update metadata")]
     public class ImageAnalysisScheduledJob : ScheduledJobBase
     {
+        private readonly IContentRepository _contentRepository = ServiceLocator.Current.GetInstance<IContentRepository>();
+
+        private IEnumerable<ImageData> _images;
+        private int _analyzeCount;
         private bool _stopSignaled;
+
+        private int _requestPerMinute = 20;
+
 
         public ImageAnalysisScheduledJob()
         {
@@ -15,17 +32,76 @@ namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
 
         public override string Execute()
         {
-            OnStatusChanged("Analyzing images...");
-            OnStatusChanged("Nah, fuck it!");
-            OnStatusChanged("I quit!");
-            OnStatusChanged("Finished!");
+            OnStatusChanged("Collecting information about images...");
+            _images = GetAllImages().Where(IsNotProcessed);
+            _analyzeCount = 0;
 
-            if (_stopSignaled)
+            foreach (var image in _images)
             {
-                return "Job stopped!";
+                if (_stopSignaled)
+                {
+                    return "Job stopped. " + GetStatus();
+                }
+
+                OnStatusChanged($"Analyzing image {_analyzeCount + 1}...");
+                UpdateImage(image);
+
+                if (_requestPerMinute > 0)
+                {
+                    Thread.Sleep(60/ _requestPerMinute * 1000);
+                }
+
+                _analyzeCount++;
             }
 
-            return "Job completed. No changes were made!";
+            OnStatusChanged("Finished!");
+
+            return "Job completed. " + GetStatus();
+        }
+
+        private IEnumerable<ImageData> GetAllImages()
+        {
+            var contentImages = GetImages(EPiServer.Web.SiteDefinition.Current.ContentAssetsRoot);
+            var globalImages = GetImages(EPiServer.Web.SiteDefinition.Current.GlobalAssetsRoot);
+            return contentImages.Union(globalImages);
+        }
+
+        private IEnumerable<ImageData> GetImages(ContentReference root)
+        {
+            var fileReferences = _contentRepository.GetDescendents(root);
+            foreach (var fileReference in fileReferences)
+            {
+                var image = _contentRepository.Get<IContent>(fileReference) as ImageData;
+                if (image != null)
+                {
+                    yield return image;
+                }
+            }
+        }
+
+        private static bool IsNotProcessed(ImageData image)
+        {
+            var analyzableImage = image as IAnalyzableImage;
+            return analyzableImage == null || !analyzableImage.ImageAnalysisCompleted;
+        }
+
+        private void UpdateImage(ImageData image)
+        {
+            var writableImage = image.CreateWritableClone() as ImageData;
+            ImageAnalyzer.AnalyzeImageAndUpdateMetaData(writableImage);
+
+            var analyzableImage = image as IAnalyzableImage;
+            if (analyzableImage != null)
+            {
+                analyzableImage.ImageAnalysisCompleted = true;
+            }
+
+            _contentRepository.Save(writableImage, SaveAction.Patch, AccessLevel.NoAccess);
+        }
+
+        private string GetStatus()
+        {
+            return $"{_analyzeCount} of {_images.Count()} images were updated.";
         }
 
         public override void Stop()

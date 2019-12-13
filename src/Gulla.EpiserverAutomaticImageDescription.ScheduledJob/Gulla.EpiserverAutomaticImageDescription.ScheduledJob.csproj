@@ -110,6 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAnalyzableImage.cs" />
     <Compile Include="ImageAnalysisScheduledJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
