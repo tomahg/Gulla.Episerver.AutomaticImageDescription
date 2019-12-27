@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Attributes
+﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image and create a list of tags. Apply to string or IList&lt;string&gt; properties.

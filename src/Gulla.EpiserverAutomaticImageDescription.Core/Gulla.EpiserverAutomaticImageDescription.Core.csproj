@@ -161,6 +161,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Image\Models\ContentProperty.cs" />
     <Compile Include="Translation\Auth\AuthToken.cs" />
     <Compile Include="Translation\Constants\TranslationLanguage.cs" />
     <Compile Include="Translation\Translator.cs" />
@@ -171,15 +172,15 @@
     <Compile Include="Translation\DTO\TextResult.cs" />
     <Compile Include="Translation\DTO\Translation.cs" />
     <Compile Include="Translation\DTO\TranslationResult.cs" />
-    <Compile Include="ImageAnalysis\Attributes\BaseImageDetailsAttribute.cs" />
-    <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForBrandsAttribute.cs" />
-    <Compile Include="ImageAnalysis\Attributes\ImageRacismAttribute.cs" />
-    <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForRacismAttribute.cs" />
+    <Compile Include="Image\Attributes\BaseImageDetailsAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForBrandsAttribute.cs" />
+    <Compile Include="Image\Attributes\ImageRacismAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForRacismAttribute.cs" />
     <Compile Include="Initialization\EventsInitialization.cs" />
-    <Compile Include="ImageAnalysis\ImageAnalyzer.cs" />
-    <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForDescriptionAttribute.cs" />
-    <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForOcrAttribute.cs" />
-    <Compile Include="ImageAnalysis\Attributes\AnalyzeImageForTagsAttribute.cs" />
+    <Compile Include="Image\ImageAnalyzer.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForDescriptionAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForOcrAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForTagsAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

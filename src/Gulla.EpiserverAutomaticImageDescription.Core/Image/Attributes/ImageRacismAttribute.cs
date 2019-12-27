@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Attributes
+﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image for racy content. Apply to bool properties for true/false or double/string for racy score.

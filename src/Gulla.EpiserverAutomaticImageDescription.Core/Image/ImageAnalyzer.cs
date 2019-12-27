@@ -8,13 +8,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
-using Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Attributes;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image.Models;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
+namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 {
     public static class ImageAnalyzer
     {
@@ -36,11 +37,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
                 var imageAnalyzerResult = AnalyzeImage(GetImageStream(image));
                 if (imageAnalyzerResult != null)
                 {
-                    UpdateDescription(image, imageAnalyzerResult, descriptionProperties);
-                    UpdateTags(image, imageAnalyzerResult, tagProperties);
-                    UpdateAdult(image, imageAnalyzerResult, adultProperties);
-                    UpdateRacism(image, imageAnalyzerResult, racismProperties);
-                    UpdateBrands(image, imageAnalyzerResult, brandsProperties);
+                    UpdateDescription(imageAnalyzerResult, descriptionProperties);
+                    UpdateTags(imageAnalyzerResult, tagProperties);
+                    UpdateAdult(imageAnalyzerResult, adultProperties);
+                    UpdateRacism(imageAnalyzerResult, racismProperties);
+                    UpdateBrands(imageAnalyzerResult, brandsProperties);
                 }
             }
 
@@ -50,23 +51,46 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
                 var ocrResult = OcrAnalyzeImage(GetImageStream(image));
                 if (ocrResult != null)
                 {
-                    UpdateOcr(image, ocrResult, ocrProperties);
+                    UpdateOcr(ocrResult, ocrProperties);
                 }
             }
         }
 
-        private static IEnumerable<PropertyInfo> GetPropertiesWithAttribute(IContent content, Type attribute)
+        private static IEnumerable<ContentProperty> GetPropertiesWithAttribute(IContent content, Type attribute)
         {
-            return content.GetType().GetProperties().Where(property => Attribute.IsDefined(property, attribute));
+            var pageProperties = GetPagePropertiesWithAttribute(content, attribute);
+            var blockProperties = GetBlockPropertiesWithAttribute(content, attribute);
+            return pageProperties.Union(blockProperties);
         }
 
-        private static Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis AnalyzeImage(Stream image)
+        private static IEnumerable<ContentProperty> GetPagePropertiesWithAttribute(IContent content, Type attribute)
+        {
+            return content.GetType().GetProperties()
+                .Where(pageProperty => Attribute.IsDefined(pageProperty, attribute))
+                .Select(property => new ContentProperty { Content = content, Property = property });
+        }
+
+        private static IEnumerable<ContentProperty> GetBlockPropertiesWithAttribute(IContent content, Type attribute)
+        {
+            return content.GetType().GetProperties()
+                .Where(pageProperty => typeof(BlockData).IsAssignableFrom(pageProperty.PropertyType))
+                .Select(propertyInfo => GetBlockPropertiesWithAttributeForSingleBlock(content, propertyInfo, attribute)).SelectMany(x => x);
+        }
+
+        private static IEnumerable<ContentProperty> GetBlockPropertiesWithAttributeForSingleBlock(IContent content, PropertyInfo localBlockProperty, Type attribute)
+        {
+            var blockPropertiesWithAttribute = localBlockProperty.PropertyType.GetProperties().Where(blockProperty => Attribute.IsDefined(blockProperty, attribute));
+            var block = content.Property[localBlockProperty.Name].GetType().GetProperties().Single(x => x.Name == "Block").GetValue(content.Property[localBlockProperty.Name]);
+            return blockPropertiesWithAttribute.Select(property => new ContentProperty { Content = block, Property = property });
+        }
+
+        private static ImageAnalysis AnalyzeImage(Stream image)
         {
             var task = Task.Run(async () => await AnalyzeImageFeatures(image));
             return task.Result;
         }
 
-        private static async Task<Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis> AnalyzeImageFeatures(Stream image)
+        private static async Task<ImageAnalysis> AnalyzeImageFeatures(Stream image)
         {
             var features = new List<VisualFeatureTypes>
             {
@@ -89,127 +113,127 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis
             return await Client.RecognizePrintedTextInStreamAsync(true, image);
         }
 
-        private static void UpdateDescription(ImageData image, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis imageAnalyzerResult, IEnumerable<PropertyInfo> descriptionProperties)
+        private static void UpdateDescription(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (imageAnalyzerResult?.Description?.Captions == null)
             {
                 return;
             }
 
-            foreach (var descriptionProperty in descriptionProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                if (IsStringProperty(descriptionProperty))
+                if (IsStringProperty(contentProperty.Property))
                 {
-                    var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), descriptionProperty);
-                    descriptionProperty.SetValue(image, descriptionTranslated);
+                    var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), contentProperty.Property);
+                    contentProperty.Property.SetValue(contentProperty.Content, descriptionTranslated);
                 }
             }
         }
 
-        private static void UpdateTags(ImageData image, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis imageAnalyzerResult, IEnumerable<PropertyInfo> tagProperties)
+        private static void UpdateTags(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (imageAnalyzerResult.Description.Tags == null || imageAnalyzerResult.Description.Tags.Count == 0)
             {
                 return;
             }
 
-            foreach (var tagProperty in tagProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags, tagProperty);
+                var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags, contentProperty.Property);
 
-                if (IsStringProperty(tagProperty))
+                if (IsStringProperty(contentProperty.Property))
                 {
-                    tagProperty.SetValue(image, string.Join(", ", tagsTranslated));
+                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(", ", tagsTranslated));
                 }
-                else if (IsStringListProperty(tagProperty))
+                else if (IsStringListProperty(contentProperty.Property))
                 {
-                    tagProperty.SetValue(image, tagsTranslated.ToList());
+                    contentProperty.Property.SetValue(contentProperty.Content, tagsTranslated.ToList());
                 }
             }
         }
 
-        private static void UpdateAdult(ImageData image, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis imageAnalyzerResult, IEnumerable<PropertyInfo> adultProperties)
+        private static void UpdateAdult(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (imageAnalyzerResult.Adult == null)
             {
                 return;
             }
 
-            foreach (var adultProperty in adultProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                if (IsBooleanProperty(adultProperty))
+                if (IsBooleanProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.IsAdultContent);
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.IsAdultContent);
                 }
-                else if (IsDoubleProperty(adultProperty))
+                else if (IsDoubleProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.AdultScore);
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.AdultScore);
                 }
-                else if (IsStringProperty(adultProperty))
+                else if (IsStringProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
 
-        private static void UpdateRacism(ImageData image, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis imageAnalyzerResult, IEnumerable<PropertyInfo> racismProperties)
+        private static void UpdateRacism(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (imageAnalyzerResult.Adult == null)
             {
                 return;
             }
 
-            foreach (var adultProperty in racismProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                if (IsBooleanProperty(adultProperty))
+                if (IsBooleanProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.IsRacyContent);
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.IsRacyContent);
                 }
-                else if (IsDoubleProperty(adultProperty))
+                else if (IsDoubleProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.RacyScore);
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.RacyScore);
                 }
-                else if (IsStringProperty(adultProperty))
+                else if (IsStringProperty(contentProperty.Property))
                 {
-                    adultProperty.SetValue(image, imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
 
-        private static void UpdateBrands(ImageData image, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ImageAnalysis imageAnalyzerResult, IEnumerable<PropertyInfo> brandsProperties)
+        private static void UpdateBrands(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (imageAnalyzerResult.Brands == null || imageAnalyzerResult.Brands.Count == 0)
             {
                 return;
             }
 
-            foreach (var brandsProperty in brandsProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                if (IsStringProperty(brandsProperty))
+                if (IsStringProperty(contentProperty.Property))
                 {
-                    brandsProperty.SetValue(image, string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
+                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
                 }
-                else if (IsStringListProperty(brandsProperty))
+                else if (IsStringListProperty(contentProperty.Property))
                 {
-                    brandsProperty.SetValue(image, imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
+                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
                 }
             }
         }
 
-        private static void UpdateOcr(ImageData image, OcrResult ocrResult, IEnumerable<PropertyInfo> ocrProperties)
+        private static void UpdateOcr(OcrResult ocrResult, IEnumerable<ContentProperty> contentProperties)
         {
             if (ocrResult.Regions == null || ocrResult.Regions.Count == 0)
             {
                 return;
             }
 
-            foreach (var ocrProperty in ocrProperties)
+            foreach (var contentProperty in contentProperties)
             {
-                var ocrTranslated = GetTranslatedOcr(ocrResult, ocrProperty);
+                var ocrTranslated = GetTranslatedOcr(ocrResult, contentProperty.Property);
 
-                if (IsStringProperty(ocrProperty))
+                if (IsStringProperty(contentProperty.Property))
                 {
-                    ocrProperty.SetValue(image,string.Join(" ", ocrTranslated));
+                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(" ", ocrTranslated));
                 }
             }
         }

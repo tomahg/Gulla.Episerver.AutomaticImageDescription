@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Attributes
+namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     public abstract class BaseImageDetailsAttribute : Attribute
     {

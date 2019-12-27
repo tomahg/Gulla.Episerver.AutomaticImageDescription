@@ -8,7 +8,7 @@ using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
-using Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image;
 
 namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
 {

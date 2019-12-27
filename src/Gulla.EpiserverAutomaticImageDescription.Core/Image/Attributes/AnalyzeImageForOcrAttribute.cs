@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis.Attributes
+﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image and perform Optical Character Recognition (OCR). Apply to string properties.

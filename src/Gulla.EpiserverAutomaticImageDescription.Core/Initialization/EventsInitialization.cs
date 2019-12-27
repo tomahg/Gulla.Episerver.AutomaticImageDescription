@@ -3,7 +3,7 @@ using EPiServer.Core;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
-using Gulla.EpiserverAutomaticImageDescription.Core.ImageAnalysis;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image;
 
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Initialization
 {
