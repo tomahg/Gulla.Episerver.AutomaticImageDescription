@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Castle.Core.Internal;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAccess;
@@ -22,7 +21,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
         private int _analyzeCount;
         private bool _stopSignaled;
 
-        private int _requestPerMinute = 20;
+        private int _requestsPerMinute = 20;
 
 
         public ImageAnalysisScheduledJob()
@@ -46,9 +45,9 @@ namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
                 OnStatusChanged($"Analyzing image {_analyzeCount + 1}...");
                 UpdateImage(image);
 
-                if (_requestPerMinute > 0)
+                if (_requestsPerMinute > 0)
                 {
-                    Thread.Sleep(60/ _requestPerMinute * 1000);
+                    Thread.Sleep(60/ _requestsPerMinute * 1000);
                 }
 
                 _analyzeCount++;
