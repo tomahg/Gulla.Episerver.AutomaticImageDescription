@@ -96,7 +96,13 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             {
                 VisualFeatureTypes.Adult,
                 VisualFeatureTypes.Brands,
-                VisualFeatureTypes.Description
+                VisualFeatureTypes.Categories,
+                VisualFeatureTypes.Color,
+                VisualFeatureTypes.Description,
+                VisualFeatureTypes.Faces,
+                VisualFeatureTypes.ImageType,
+                VisualFeatureTypes.Objects,
+                VisualFeatureTypes.Tags
             };
 
             return await Client.AnalyzeImageInStreamAsync(image, features);
