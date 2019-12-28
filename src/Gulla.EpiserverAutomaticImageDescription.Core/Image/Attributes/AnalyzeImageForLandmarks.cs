@@ -5,9 +5,9 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
-    /// Analyze image for celebrities. Apply to string or IList&lt;string&gt; properties.
+    /// Analyze image for landmarks. Apply to string or IList&lt;string&gt; properties.
     /// </summary>
-    public class AnalyzeImageForCelebrities : BaseImageDetailsAttribute
+    public class AnalyzeImageForLandmarks : BaseImageDetailsAttribute
     {
         public override bool AnalyzeImageContent => true;
 
@@ -18,19 +18,19 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 return;
             }
 
-            var celebrities = imageAnalyzerResult.Categories.Select(x => x.Detail?.Celebrities).SelectMany(x => x).Select(y => y.Name).ToList();
-            if (!celebrities.Any())
+            var landmarks = imageAnalyzerResult.Categories.Select(x => x.Detail?.Landmarks).SelectMany(x => x).Select(y => y.Name).ToList();
+            if (!landmarks.Any())
             {
                 return;
             }
 
             if (IsStringProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, string.Join(", ", celebrities));
+                propertyInfo.SetValue(content, string.Join(", ", landmarks));
             }
             else if (IsStringListProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, celebrities.ToList());
+                propertyInfo.SetValue(content, landmarks.ToList());
             }
         }
     }

@@ -46,16 +46,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private static string GetTranslatedDescription(string description, PropertyInfo propertyInfo)
+        private string GetTranslatedDescription(string description, PropertyInfo propertyInfo)
         {
-            var descriptionAttribute = propertyInfo.GetCustomAttribute<AnalyzeImageForDescriptionAttribute>();
-
-            if (descriptionAttribute.LanguageCode != null)
+            if (LanguageCode != null)
             {
-                description = Translator.TranslateText(new[] { description }, descriptionAttribute.LanguageCode, TranslationLanguage.English).First().Translations.First().Text;
+                description = Translator.TranslateText(new[] { description }, LanguageCode, TranslationLanguage.English).First().Translations.First().Text;
             }
 
-            return FormatDescription(description, descriptionAttribute.UpperCaseFirstLetter, descriptionAttribute.EndWithDot);
+            return FormatDescription(description, UpperCaseFirstLetter, EndWithDot);
         }
 
         private static string FormatDescription(string description, bool upperCaseFirstLetter, bool endWithDot)

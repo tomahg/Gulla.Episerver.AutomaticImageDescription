@@ -46,17 +46,15 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private static IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, PropertyInfo propertyInfo)
+        private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, PropertyInfo propertyInfo)
         {
             var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text);
-            var toLanguage = propertyInfo.GetCustomAttribute<AnalyzeImageForOcrAttribute>().ToLanguageCode;
-            if (toLanguage == null)
+            if (ToLanguageCode == null)
             {
                 return words;
             }
 
-            var fromLanguage = propertyInfo.GetCustomAttribute<AnalyzeImageForOcrAttribute>().FromLanguageCode;
-            return Translator.TranslateText(words, toLanguage, fromLanguage).Select(x => x.Translations).Select(x => x.First().Text);
+            return Translator.TranslateText(words, ToLanguageCode, FromLanguageCode).Select(x => x.Translations).Select(x => x.First().Text);
         }
     }
 }

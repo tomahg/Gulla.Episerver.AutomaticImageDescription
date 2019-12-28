@@ -161,7 +161,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Image\Attributes\AnalyzeImageForLandmarks.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForCelebrities.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForFacesAttribute.cs" />
     <Compile Include="Image\Models\ContentProperty.cs" />
     <Compile Include="Translation\Auth\AuthToken.cs" />
     <Compile Include="Translation\Constants\TranslationLanguage.cs" />
