@@ -27,20 +27,20 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo)
         {
-            if (imageAnalyzerResult.Description.Tags == null || imageAnalyzerResult.Description.Tags.Count == 0)
+            if (imageAnalyzerResult.Tags == null || imageAnalyzerResult.Tags.Count == 0)
             {
                 return;
             }
 
-            var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags);
+            var tags = GetTranslatedTags(imageAnalyzerResult.Tags.Select(x => x.Name));
 
             if (IsStringProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, string.Join(", ", tagsTranslated));
+                propertyInfo.SetValue(content, string.Join(", ", tags));
             }
             else if (IsStringListProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, tagsTranslated.ToList());
+                propertyInfo.SetValue(content, tags.ToList());
             }
         }
 
