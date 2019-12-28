@@ -18,7 +18,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 return;
             }
 
-            var landmarks = imageAnalyzerResult.Categories.Select(x => x.Detail?.Landmarks).SelectMany(x => x).Select(y => y.Name).ToList();
+            var landmarks = imageAnalyzerResult.Categories.Where(x => x.Detail != null).Select(x => x.Detail.Landmarks).Where(x => x != null).SelectMany(x => x).Select(y => y.Name).ToList();
             if (!landmarks.Any())
             {
                 return;

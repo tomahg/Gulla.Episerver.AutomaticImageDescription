@@ -18,7 +18,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 return;
             }
 
-            var celebrities = imageAnalyzerResult.Categories.Select(x => x.Detail?.Celebrities).SelectMany(x => x).Select(y => y.Name).ToList();
+            var celebrities = imageAnalyzerResult.Categories.Where(x => x.Detail != null).Select(x => x.Detail.Celebrities).Where(x => x != null).SelectMany(x => x).Select(y => y.Name).ToList();
             if (!celebrities.Any())
             {
                 return;

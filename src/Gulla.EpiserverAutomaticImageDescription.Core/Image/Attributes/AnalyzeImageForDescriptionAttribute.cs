@@ -41,12 +41,12 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsStringProperty(propertyInfo))
             {
-                var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), propertyInfo);
+                var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault());
                 propertyInfo.SetValue(content, descriptionTranslated);
             }
         }
 
-        private string GetTranslatedDescription(string description, PropertyInfo propertyInfo)
+        private string GetTranslatedDescription(string description)
         {
             if (LanguageCode != null)
             {

@@ -31,23 +31,19 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             ImageAnalysis imageAnalysisResult = null;
             OcrResult ocrResult = null;
 
-            var analyzeAttributes = imagePropertiesWithAnalyzeAttributes.Select(x => x.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute), true).Cast<BaseImageDetailsAttribute>()).SelectMany(x => x).ToList();
-            if (analyzeAttributes.Any(x => x.AnalyzeImageContent))
+            var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
+            if (analyzeAttributes.Any(x => x.Attribute.AnalyzeImageContent))
             {
                 imageAnalysisResult = AnalyzeImage(GetImageStream(image));
             }
-            if (analyzeAttributes.Any(y => y.AnalyzeImageOcr))
+            if (analyzeAttributes.Any(x => x.Attribute.AnalyzeImageOcr))
             {
                 ocrResult = OcrAnalyzeImage(GetImageStream(image));
             }
 
-            foreach (var contentProperty in imagePropertiesWithAnalyzeAttributes)
+            foreach (var attributeContentProperty in analyzeAttributes)
             {
-                var attributesForProperty = contentProperty.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute), true).Cast<BaseImageDetailsAttribute>();
-                foreach (var attribute in attributesForProperty)
-                {
-                    attribute.Update(contentProperty.Content, imageAnalysisResult, ocrResult, contentProperty.Property);
-                }
+                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property);
             }
         }
 
@@ -77,6 +73,23 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             var blockPropertiesWithAttribute = localBlockProperty.PropertyType.GetProperties().Where(blockProperty => Attribute.IsDefined(blockProperty, attribute));
             var block = content.Property[localBlockProperty.Name].GetType().GetProperties().Single(x => x.Name == "Block").GetValue(content.Property[localBlockProperty.Name]);
             return blockPropertiesWithAttribute.Select(property => new ContentProperty { Content = block, Property = property });
+        }
+
+        private static IEnumerable<AttributeContentProperty> GetAttributeContentPropertyList(IEnumerable<ContentProperty> contentProperties)
+        {
+            foreach (var contentProperty in contentProperties)
+            {
+                var attribute = contentProperty.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute)).Cast<BaseImageDetailsAttribute>().FirstOrDefault();
+                if (attribute != null)
+                {
+                    yield return new AttributeContentProperty()
+                    {
+                        Attribute = attribute,
+                        Content = contentProperty.Content,
+                        Property = contentProperty.Property
+                    };
+                }
+            }
         }
 
         private static ImageAnalysis AnalyzeImage(Stream image)

@@ -32,7 +32,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 return;
             }
 
-            var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags, propertyInfo);
+            var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags);
 
             if (IsStringProperty(propertyInfo))
             {
@@ -44,15 +44,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private static IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, PropertyInfo propertyInfo)
+        private IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags)
         {
-            var languageCode = propertyInfo.GetCustomAttribute<AnalyzeImageForTagsAttribute>().LanguageCode;
-            if (languageCode == null)
+            if (LanguageCode == null)
             {
                 return tags;
             }
 
-            return Translator.TranslateText(tags, languageCode, TranslationLanguage.English).Select(x => x.Translations).Select(x => x.First().Text);
+            return Translator.TranslateText(tags, LanguageCode, TranslationLanguage.English).Select(x => x.Translations).Select(x => x.First().Text);
         }
     }
 }

@@ -44,10 +44,16 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private IEnumerable<string> GetTranslatedGender(Gender? genderEnum)
+        private string GetTranslatedGender(Gender? genderEnum)
         {
             var gender = (genderEnum.HasValue ? (genderEnum == Gender.Male ? "Male" : "Female") : "Unknown");
-            return Translator.TranslateText(new [] {gender}, LanguageCode, TranslationLanguage.English).Select(x => x.Translations).Select(x => x.First().Text);
+
+            if (LanguageCode != null)
+            {
+                gender = Translator.TranslateText(new[] {gender}, LanguageCode, TranslationLanguage.English).Select(x => x.Translations).SelectMany(x => x).First().Text;
+            }
+
+            return gender;
         }
     }
 }
