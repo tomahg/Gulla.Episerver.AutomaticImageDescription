@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,8 +8,6 @@ using System.Web.Configuration;
 using EPiServer.Core;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Models;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
@@ -26,32 +22,31 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 
         public static void AnalyzeImageAndUpdateMetaData(ImageData image)
         {
-            var descriptionProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForDescriptionAttribute)).ToList();
-            var tagProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForTagsAttribute)).ToList();
-            var adultProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForAdultContentAttribute)).ToList();
-            var racismProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForRacismAttribute)).ToList();
-            var brandsProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForBrandsAttribute)).ToList();
-
-            if (descriptionProperties.Any() || tagProperties.Any() || adultProperties.Any() || racismProperties.Any() || brandsProperties.Any())
+            var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(image, typeof(BaseImageDetailsAttribute)).ToList();
+            if (!imagePropertiesWithAnalyzeAttributes.Any())
             {
-                var imageAnalyzerResult = AnalyzeImage(GetImageStream(image));
-                if (imageAnalyzerResult != null)
-                {
-                    UpdateDescription(imageAnalyzerResult, descriptionProperties);
-                    UpdateTags(imageAnalyzerResult, tagProperties);
-                    UpdateAdult(imageAnalyzerResult, adultProperties);
-                    UpdateRacism(imageAnalyzerResult, racismProperties);
-                    UpdateBrands(imageAnalyzerResult, brandsProperties);
-                }
+                return;
             }
 
-            var ocrProperties = GetPropertiesWithAttribute(image, typeof(AnalyzeImageForOcrAttribute)).ToList();
-            if (ocrProperties.Any())
+            ImageAnalysis imageAnalysisResult = null;
+            OcrResult ocrResult = null;
+
+            var analyzeAttributes = imagePropertiesWithAnalyzeAttributes.Select(x => x.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute), true).Cast<BaseImageDetailsAttribute>()).SelectMany(x => x).ToList();
+            if (analyzeAttributes.Any(x => x.AnalyzeImageContent))
             {
-                var ocrResult = OcrAnalyzeImage(GetImageStream(image));
-                if (ocrResult != null)
+                imageAnalysisResult = AnalyzeImage(GetImageStream(image));
+            }
+            if (analyzeAttributes.Any(y => y.AnalyzeImageOcr))
+            {
+                ocrResult = OcrAnalyzeImage(GetImageStream(image));
+            }
+
+            foreach (var contentProperty in imagePropertiesWithAnalyzeAttributes)
+            {
+                var attributesForProperty = contentProperty.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute), true).Cast<BaseImageDetailsAttribute>();
+                foreach (var attribute in attributesForProperty)
                 {
-                    UpdateOcr(ocrResult, ocrProperties);
+                    attribute.Update(contentProperty.Content, imageAnalysisResult, ocrResult, contentProperty.Property);
                 }
             }
         }
@@ -125,207 +120,9 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             return await Client.RecognizePrintedTextInStreamAsync(true, image);
         }
 
-        private static void UpdateDescription(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (imageAnalyzerResult?.Description?.Captions == null)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                if (IsStringProperty(contentProperty.Property))
-                {
-                    var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), contentProperty.Property);
-                    contentProperty.Property.SetValue(contentProperty.Content, descriptionTranslated);
-                }
-            }
-        }
-
-        private static void UpdateTags(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (imageAnalyzerResult.Description.Tags == null || imageAnalyzerResult.Description.Tags.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                var tagsTranslated = GetTranslatedTags(imageAnalyzerResult.Description.Tags, contentProperty.Property);
-
-                if (IsStringProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(", ", tagsTranslated));
-                }
-                else if (IsStringListProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, tagsTranslated.ToList());
-                }
-            }
-        }
-
-        private static void UpdateAdult(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (imageAnalyzerResult.Adult == null)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                if (IsBooleanProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.IsAdultContent);
-                }
-                else if (IsDoubleProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.AdultScore);
-                }
-                else if (IsStringProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-        }
-
-        private static void UpdateRacism(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (imageAnalyzerResult.Adult == null)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                if (IsBooleanProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.IsRacyContent);
-                }
-                else if (IsDoubleProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.RacyScore);
-                }
-                else if (IsStringProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
-                }
-            }
-        }
-
-        private static void UpdateBrands(ImageAnalysis imageAnalyzerResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (imageAnalyzerResult.Brands == null || imageAnalyzerResult.Brands.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                if (IsStringProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
-                }
-                else if (IsStringListProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
-                }
-            }
-        }
-
-        private static void UpdateOcr(OcrResult ocrResult, IEnumerable<ContentProperty> contentProperties)
-        {
-            if (ocrResult.Regions == null || ocrResult.Regions.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var contentProperty in contentProperties)
-            {
-                var ocrTranslated = GetTranslatedOcr(ocrResult, contentProperty.Property);
-
-                if (IsStringProperty(contentProperty.Property))
-                {
-                    contentProperty.Property.SetValue(contentProperty.Content, string.Join(" ", ocrTranslated));
-                }
-            }
-        }
-
-        private static string GetTranslatedDescription(string description, PropertyInfo propertyInfo)
-        {
-            var descriptionAttribute = propertyInfo.GetCustomAttribute<AnalyzeImageForDescriptionAttribute>();
-
-            if (descriptionAttribute.LanguageCode != null)
-            {
-                description = Translator.TranslateText(new[] { description }, descriptionAttribute.LanguageCode, TranslationLanguage.English).First().Translations.First().Text;
-            }
-
-            return FormatDescription(description, descriptionAttribute.UpperCaseFirstLetter, descriptionAttribute.EndWithDot);
-        }
-
-        private static IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, PropertyInfo propertyInfo)
-        {
-            var languageCode = propertyInfo.GetCustomAttribute<AnalyzeImageForTagsAttribute>().LanguageCode;
-            if (languageCode == null)
-            {
-                return tags;
-            }
-
-            return Translator.TranslateText(tags, languageCode, TranslationLanguage.English).Select(x => x.Translations).Select(x => x.First().Text);
-        }
-
-        private static IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, PropertyInfo propertyInfo)
-        {
-            var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text);
-            var toLanguage = propertyInfo.GetCustomAttribute<AnalyzeImageForOcrAttribute>().LanguageCode;
-            if (toLanguage == null)
-            {
-                return words;
-            }
-
-            var fromLanguage = propertyInfo.GetCustomAttribute<AnalyzeImageForOcrAttribute>().FromLanguageCode;
-            return Translator.TranslateText(words, toLanguage, fromLanguage).Select(x => x.Translations).Select(x => x.First().Text);
-        }
-
-        private static string FormatDescription(string description, bool upperCaseFirstLetter, bool endWithDot)
-        {
-            if (string.IsNullOrEmpty(description))
-            {
-                return description;
-            }
-
-            if (upperCaseFirstLetter)
-            {
-                description = description[0].ToString().ToUpper() + (description.Length > 1 ? description.Substring(1) : "");
-            }
-
-            return description + (endWithDot && !description.Trim().EndsWith(".") ? "." : "");
-        }
-
         private static Stream GetImageStream(ImageData image)
         {
             return image.BinaryData.OpenRead();
-        }
-
-        private static bool IsBooleanProperty(PropertyInfo propertyInfo)
-        {
-            return propertyInfo.PropertyType == typeof(bool);
-        }
-
-        private static bool IsDoubleProperty(PropertyInfo propertyInfo)
-        {
-            return propertyInfo.PropertyType == typeof(double);
-        }
-
-        private static bool IsStringProperty(PropertyInfo propertyInfo)
-        {
-            return propertyInfo.PropertyType == typeof(string);
-        }
-
-        private static bool IsStringListProperty(PropertyInfo propertyInfo)
-        {
-            return propertyInfo.PropertyType == typeof(IList<string>) ||
-                   propertyInfo.PropertyType == typeof(IEnumerable<string>) ||
-                   propertyInfo.PropertyType == typeof(ICollection);
         }
 
         private static ComputerVisionClient Client =>

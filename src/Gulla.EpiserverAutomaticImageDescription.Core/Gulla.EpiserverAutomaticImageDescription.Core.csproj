@@ -161,6 +161,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Image\Attributes\AnalyzeImageForCelebrities.cs" />
     <Compile Include="Image\Models\ContentProperty.cs" />
     <Compile Include="Translation\Auth\AuthToken.cs" />
     <Compile Include="Translation\Constants\TranslationLanguage.cs" />
@@ -174,7 +175,7 @@
     <Compile Include="Translation\DTO\TranslationResult.cs" />
     <Compile Include="Image\Attributes\BaseImageDetailsAttribute.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForBrandsAttribute.cs" />
-    <Compile Include="Image\Attributes\ImageRacismAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForAdultContentAttribute.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForRacismAttribute.cs" />
     <Compile Include="Initialization\EventsInitialization.cs" />
     <Compile Include="Image\ImageAnalyzer.cs" />

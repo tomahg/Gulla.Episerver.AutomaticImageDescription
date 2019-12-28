@@ -5,9 +5,9 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
-    /// Analyze image for racy content. Apply to bool properties for true/false or double/string for racy score.
+    /// Analyze image for adult content. Apply to bool properties for true/false or double/string for adult score.
     /// </summary>
-    public class AnalyzeImageForRacismAttribute : BaseImageDetailsAttribute
+    public class AnalyzeImageForAdultContentAttribute : BaseImageDetailsAttribute
     {
         public override bool AnalyzeImageContent => true;
 
@@ -20,15 +20,15 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsBooleanProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.IsRacyContent);
+                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.IsAdultContent);
             }
             else if (IsDoubleProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.RacyScore);
+                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.AdultScore);
             }
             else if (IsStringProperty(propertyInfo))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
+                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
             }
         }
     }
