@@ -6,6 +6,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image for adult content. Apply to bool properties for true/false or double/string for adult score.
+    /// Adult images are defined as those which are explicitly sexual in nature and often depict nudity and sexual acts.
     /// </summary>
     public class AnalyzeImageForAdultContentAttribute : BaseImageDetailsAttribute
     {

@@ -176,7 +176,7 @@
     <Compile Include="Image\Attributes\BaseImageDetailsAttribute.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForBrandsAttribute.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForAdultContentAttribute.cs" />
-    <Compile Include="Image\Attributes\AnalyzeImageForRacismAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForRacyContentAttribute.cs" />
     <Compile Include="Initialization\EventsInitialization.cs" />
     <Compile Include="Image\ImageAnalyzer.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForDescriptionAttribute.cs" />
