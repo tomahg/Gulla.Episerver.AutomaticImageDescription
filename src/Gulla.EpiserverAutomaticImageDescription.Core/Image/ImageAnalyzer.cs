@@ -105,7 +105,13 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
                 VisualFeatureTypes.Tags
             };
 
-            return await Client.AnalyzeImageInStreamAsync(image, features);
+            var details = new List<Details>
+            {
+                Details.Celebrities,
+                Details.Landmarks
+            };
+
+            return await Client.AnalyzeImageInStreamAsync(image, features, details);
         }
 
         private static OcrResult OcrAnalyzeImage(Stream image)
