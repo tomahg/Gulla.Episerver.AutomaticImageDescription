@@ -18,18 +18,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
 
         public static IEnumerable<TranslationResult> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
-            var task = Task.Run(async () => await TranslateTextRequest(inputText.ToArray(), toLanguage, fromLanguage));
-            return task.Result;
-        }
-
-        private static async Task<IEnumerable<TranslationResult>> TranslateTextRequest(string[] inputText, string toLanguage, string fromLanguage)
-        {
             var auth = new AuthToken(TranslatorSubscriptionKey);
             var requestToken = await auth.GetAccessTokenAsync();
 
             var route = $"/translate?api-version=3.0&to={toLanguage}" + (fromLanguage != null ? $"&from={fromLanguage}" : "");
-            var content = inputText.Select(x => new TextForTranslation {Text = x}).ToArray();
-
+            var content = inputText.Select(x => new TextForTranslation { Text = x }).ToArray();
             var requestBody = JsonConvert.SerializeObject(content);
 
             using (var client = new HttpClient())
@@ -41,7 +34,6 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", TranslatorSubscriptionKey);
                 request.Headers.Add("Authorization", requestToken);
-
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 var result = await response.Content.ReadAsStringAsync();
