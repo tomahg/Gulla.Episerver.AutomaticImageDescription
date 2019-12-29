@@ -48,8 +48,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, TranslationService translationService)
         {
-            var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text);
-            if (_toLanguageCode == null)
+            var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text).ToList();
+            if (_toLanguageCode == null || words.Count == 0)
             {
                 return words;
             }

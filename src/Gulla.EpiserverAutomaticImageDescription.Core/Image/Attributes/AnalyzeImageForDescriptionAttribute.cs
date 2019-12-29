@@ -46,7 +46,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         private string GetTranslatedDescription(string description, TranslationService translationService)
         {
-            if (_languageCode != null)
+            if (_languageCode != null && !string.IsNullOrEmpty(description))
             {
                 description = translationService.TranslateText(new[] { description }, _languageCode, TranslationLanguage.English).First();
             }
