@@ -31,14 +31,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool AnalyzeImageOcr => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
             if (ocrResult.Regions == null || ocrResult.Regions.Count == 0)
             {
                 return;
             }
 
-            var ocrTranslated = GetTranslatedOcr(ocrResult, propertyInfo, translationCache);
+            var ocrTranslated = GetTranslatedOcr(ocrResult, translationService);
 
             if (IsStringProperty(propertyInfo))
             {
@@ -46,7 +46,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
+        private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, TranslationService translationService)
         {
             var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text);
             if (ToLanguageCode == null)
@@ -54,7 +54,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 return words;
             }
 
-            return Translator.TranslateText(words, ToLanguageCode, FromLanguageCode, translationCache);
+            return translationService.TranslateText(words, ToLanguageCode, FromLanguageCode);
         }
     }
 }

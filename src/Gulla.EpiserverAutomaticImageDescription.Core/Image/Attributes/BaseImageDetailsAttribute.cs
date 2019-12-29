@@ -26,8 +26,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
         /// <param name="ocrResult"> OCR result.</param>
         /// <param name="propertyInfo">The PropertyInfo that needs to be updated.</param>
-        /// <param name="translationCache">Cache to prevent translation the same text, for the same image, several times.</param>
-        public abstract void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache);
+        /// <param name="translationService">Service for translating text.</param>
+        public abstract void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService);
 
         protected static bool IsBooleanProperty(PropertyInfo propertyInfo)
         {

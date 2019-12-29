@@ -168,8 +168,8 @@
     <Compile Include="Image\Models\ContentProperty.cs" />
     <Compile Include="Translation\Auth\AuthToken.cs" />
     <Compile Include="Translation\Constants\TranslationLanguage.cs" />
-    <Compile Include="Translation\TranslationCache.cs" />
-    <Compile Include="Translation\Translator.cs" />
+    <Compile Include="Translation\Cache\TranslationCache.cs" />
+    <Compile Include="Translation\TranslationService.cs" />
     <Compile Include="Translation\DTO\Alignment.cs" />
     <Compile Include="Translation\DTO\DetectedLanguage.cs" />
     <Compile Include="Translation\DTO\SentenceLength.cs" />

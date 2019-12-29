@@ -25,14 +25,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
             if (imageAnalyzerResult.Tags == null || imageAnalyzerResult.Tags.Count == 0)
             {
                 return;
             }
 
-            var tags = GetTranslatedTags(imageAnalyzerResult.Tags.Select(x => x.Name), translationCache);
+            var tags = GetTranslatedTags(imageAnalyzerResult.Tags.Select(x => x.Name), translationService);
 
             if (IsStringProperty(propertyInfo))
             {
@@ -44,14 +44,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, TranslationCache translationCache)
+        private IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, TranslationService translationService)
         {
             if (LanguageCode == null)
             {
                 return tags;
             }
 
-            return Translator.TranslateText(tags, LanguageCode, TranslationLanguage.English, translationCache);
+            return translationService.TranslateText(tags, LanguageCode, TranslationLanguage.English);
         }
     }
 }

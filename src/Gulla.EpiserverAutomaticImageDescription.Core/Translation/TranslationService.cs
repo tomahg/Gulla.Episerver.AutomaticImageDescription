@@ -11,38 +11,44 @@ using Newtonsoft.Json;
 
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
 {
-    public static class Translator
+    public class TranslationService
     {
         private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:Translator.SubscriptionKey"];
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
+        private readonly string _requestToken;
+        private readonly TranslationCache _cache;
 
-        public static IEnumerable<string> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage, TranslationCache translationCache)
+        public TranslationService()
+        {
+            var auth = new AuthToken(TranslatorSubscriptionKey);
+            _requestToken = Task.Run(() => auth.GetAccessTokenAsync()).Result;
+            _cache = new TranslationCache();
+        }
+
+        public IEnumerable<string> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
             var originalText = inputText.ToArray();
             var cacheKey = $"{fromLanguage}-{toLanguage}-{string.Join("", originalText)}";
-            if (translationCache.TryGetValue(cacheKey, out var cachedTranslation))
+            if (_cache.TryGetValue(cacheKey, out var cachedTranslation))
             {
                 return cachedTranslation;
             }
 
-            var task = Task.Run(async () => await TranslateTextRequest(originalText, toLanguage, fromLanguage));
+            var task = Task.Run(() => TranslateTextRequest(originalText, toLanguage, fromLanguage));
 
             var translations = task.Result.Select(x => x.Translations).SelectMany(x => x).Select(x => x.Text).ToList();
-            translationCache.Add(cacheKey, translations);
+            _cache.Add(cacheKey, translations);
             return translations;
         }
 
-        public static IEnumerable<string> TranslateTextUncached(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
+        public IEnumerable<string> TranslateTextUncached(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
-            var task = Task.Run(async () => await TranslateTextRequest(inputText.ToArray(), toLanguage, fromLanguage));
+            var task = Task.Run(() => TranslateTextRequest(inputText.ToArray(), toLanguage, fromLanguage));
             return task.Result.Select(x => x.Translations).SelectMany(x => x).Select(x => x.Text).ToList();
         }
 
-        private static async Task<IEnumerable<TranslationResult>> TranslateTextRequest(string[] inputText, string toLanguage, string fromLanguage)
+        private async Task<IEnumerable<TranslationResult>> TranslateTextRequest(string[] inputText, string toLanguage, string fromLanguage)
         {
-            var auth = new AuthToken(TranslatorSubscriptionKey);
-            var requestToken = await auth.GetAccessTokenAsync();
-
             var route = $"/translate?api-version=3.0&to={toLanguage}" + (fromLanguage != null ? $"&from={fromLanguage}" : "");
             var content = inputText.Select(x => new TextForTranslation {Text = x}).ToArray();
 
@@ -56,7 +62,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
                 request.RequestUri = new Uri(TranslatorEndpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", TranslatorSubscriptionKey);
-                request.Headers.Add("Authorization", requestToken);
+                request.Headers.Add("Authorization", _requestToken);
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 var result = await response.Content.ReadAsStringAsync();

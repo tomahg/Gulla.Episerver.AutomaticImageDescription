@@ -42,10 +42,12 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
                 ocrResult = OcrAnalyzeImage(GetImageStream(image));
             }
 
-            var translationCache = new TranslationCache();
+            // Creates authorization token + empty cache.
+            var translationService = new TranslationService(); 
+            
             foreach (var attributeContentProperty in analyzeAttributes)
             {
-                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property, translationCache);
+                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property, translationService);
             }
         }
 
@@ -96,7 +98,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 
         private static ImageAnalysis AnalyzeImage(Stream image)
         {
-            var task = Task.Run(async () => await AnalyzeImageFeatures(image));
+            var task = Task.Run(() => AnalyzeImageFeatures(image));
             return task.Result;
         }
 
@@ -126,7 +128,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 
         private static OcrResult OcrAnalyzeImage(Stream image)
         {
-            var task = Task.Run(async () => await OcrAnalyzeImageStream(image));
+            var task = Task.Run(() => OcrAnalyzeImageStream(image));
             return task.Result;
         }
 

@@ -12,7 +12,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     {
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
             if (imageAnalyzerResult?.Categories == null)
             {
