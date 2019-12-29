@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Web.Configuration;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAccess;
@@ -16,16 +17,19 @@ namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
     public class ImageAnalysisScheduledJob : ScheduledJobBase
     {
         private readonly IContentRepository _contentRepository = ServiceLocator.Current.GetInstance<IContentRepository>();
-
         private IEnumerable<ImageData> _images;
         private int _analyzeCount;
         private bool _stopSignaled;
-
-        private int _requestsPerMinute = 20;
-
+        private readonly int _requestsPerMinute = 20;
 
         public ImageAnalysisScheduledJob()
         {
+            var appSetting = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:ScheduledJob.MaxRequestsPerMinute"];
+            if (appSetting != null)
+            {
+                int.TryParse(appSetting, out _requestsPerMinute);
+            }
+
             IsStoppable = true;
         }
 
