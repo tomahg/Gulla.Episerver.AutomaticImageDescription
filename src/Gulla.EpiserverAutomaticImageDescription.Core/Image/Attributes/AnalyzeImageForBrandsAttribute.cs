@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
@@ -11,7 +12,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     {
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
         {
             if (imageAnalyzerResult.Brands == null || imageAnalyzerResult.Brands.Count == 0)
             {

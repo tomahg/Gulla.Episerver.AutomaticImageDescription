@@ -32,7 +32,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
         {
             if (imageAnalyzerResult?.Description?.Captions == null)
             {
@@ -41,16 +41,16 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsStringProperty(propertyInfo))
             {
-                var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault());
+                var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), translationCache);
                 propertyInfo.SetValue(content, descriptionTranslated);
             }
         }
 
-        private string GetTranslatedDescription(string description)
+        private string GetTranslatedDescription(string description, TranslationCache translationCache)
         {
             if (LanguageCode != null)
             {
-                description = Translator.TranslateText(new[] { description }, LanguageCode, TranslationLanguage.English).First().Translations.First().Text;
+                description = Translator.TranslateText(new[] { description }, LanguageCode, TranslationLanguage.English, translationCache).First();
             }
 
             return FormatDescription(description, UpperCaseFirstLetter, EndWithDot);

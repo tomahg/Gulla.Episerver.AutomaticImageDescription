@@ -8,6 +8,7 @@ using System.Web.Configuration;
 using EPiServer.Core;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Models;
+using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
@@ -41,9 +42,10 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
                 ocrResult = OcrAnalyzeImage(GetImageStream(image));
             }
 
+            var translationCache = new TranslationCache();
             foreach (var attributeContentProperty in analyzeAttributes)
             {
-                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property);
+                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property, translationCache);
             }
         }
 

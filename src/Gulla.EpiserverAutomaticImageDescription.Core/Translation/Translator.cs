@@ -16,10 +16,26 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
         private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:Translator.SubscriptionKey"];
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
 
-        public static IEnumerable<TranslationResult> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
+        public static IEnumerable<string> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage, TranslationCache translationCache)
+        {
+            var originalText = inputText.ToArray();
+            var cacheKey = $"{fromLanguage}-{toLanguage}-{string.Join("", originalText)}";
+            if (translationCache.TryGetValue(cacheKey, out var cachedTranslation))
+            {
+                return cachedTranslation;
+            }
+
+            var task = Task.Run(async () => await TranslateTextRequest(originalText, toLanguage, fromLanguage));
+
+            var translations = task.Result.Select(x => x.Translations).SelectMany(x => x).Select(x => x.Text).ToList();
+            translationCache.Add(cacheKey, translations);
+            return translations;
+        }
+
+        public static IEnumerable<string> TranslateTextUncached(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
             var task = Task.Run(async () => await TranslateTextRequest(inputText.ToArray(), toLanguage, fromLanguage));
-            return task.Result;
+            return task.Result.Select(x => x.Translations).SelectMany(x => x).Select(x => x.Text).ToList();
         }
 
         private static async Task<IEnumerable<TranslationResult>> TranslateTextRequest(string[] inputText, string toLanguage, string fromLanguage)
@@ -41,7 +57,6 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", TranslatorSubscriptionKey);
                 request.Headers.Add("Authorization", requestToken);
-
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 var result = await response.Content.ReadAsStringAsync();

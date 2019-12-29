@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
@@ -21,18 +20,23 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             LanguageCode = languageCode;
         }
 
+        public AnalyzeImageForFacesAttribute(string maleAdultString, string femaleAdultString, string maleChildString, string femaleChildString, int childTurnsAdultAtAge)
+        {
+            
+        }
+
         private string LanguageCode { get; }
 
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo)
+        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache)
         {
             if (imageAnalyzerResult.Faces == null || imageAnalyzerResult.Faces.Count == 0)
             {
                 return;
             }
 
-            var faces = imageAnalyzerResult.Faces.Select(x =>  $"{GetTranslatedGender(x.Gender)} ({x.Age})"); 
+            var faces = imageAnalyzerResult.Faces.Select(x =>  $"{GetTranslatedGender(x.Gender, translationCache)} ({x.Age})"); 
 
             if (IsStringProperty(propertyInfo))
             {
@@ -44,13 +48,13 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private string GetTranslatedGender(Gender? genderEnum)
+        private string GetTranslatedGender(Gender? genderEnum, TranslationCache translationCache)
         {
             var gender = (genderEnum.HasValue ? (genderEnum == Gender.Male ? "Male" : "Female") : "Unknown");
 
             if (LanguageCode != null)
             {
-                gender = Translator.TranslateText(new[] {gender}, LanguageCode, TranslationLanguage.English).Select(x => x.Translations).SelectMany(x => x).First().Text;
+                gender = Translator.TranslateText(new[] {gender}, LanguageCode, TranslationLanguage.English, translationCache).First();
             }
 
             return gender;

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
@@ -25,7 +26,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
         /// <param name="ocrResult"> OCR result.</param>
         /// <param name="propertyInfo">The PropertyInfo that needs to be updated.</param>
-        public abstract void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo);
+        /// <param name="translationCache">Cache to prevent translation the same text, for the same image, several times.</param>
+        public abstract void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationCache translationCache);
 
         protected static bool IsBooleanProperty(PropertyInfo propertyInfo)
         {
