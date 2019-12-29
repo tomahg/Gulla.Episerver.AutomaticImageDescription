@@ -7,7 +7,7 @@
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>A sceduled job that automatically populate properties based on image content.</summary>
+    <summary>A scheduled job that automatically populate properties based on image content.</summary>
     <copyright>Copyright 2019</copyright>	
     <repository type="git" url="https://github.com/tomahg/Gulla.EpiserverCensorFaces" branch="master" />
     <releaseNotes>Initial version.</releaseNotes>
