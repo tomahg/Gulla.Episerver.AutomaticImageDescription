@@ -11,6 +11,9 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     /// </summary>
     public class AnalyzeImageForOcrAttribute : BaseImageDetailsAttribute
     {
+        private readonly string _fromLanguageCode;
+        private readonly string _toLanguageCode;
+
         public AnalyzeImageForOcrAttribute()
         {
         }
@@ -22,12 +25,9 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         /// <param name="fromLanguage">If you know what language the source text is, specify. If null, the algorithm will try to detect source language.</param>
         public AnalyzeImageForOcrAttribute(string toLanguage, string fromLanguage = null)
         {
-            FromLanguageCode = fromLanguage;
-            ToLanguageCode = toLanguage;
+            _toLanguageCode = toLanguage;
+            _fromLanguageCode = fromLanguage;
         }
-
-        private string FromLanguageCode { get; }
-        private string ToLanguageCode { get; }
 
         public override bool AnalyzeImageOcr => true;
 
@@ -49,12 +49,12 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, TranslationService translationService)
         {
             var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text);
-            if (ToLanguageCode == null)
+            if (_toLanguageCode == null)
             {
                 return words;
             }
 
-            return translationService.TranslateText(words, ToLanguageCode, FromLanguageCode);
+            return translationService.TranslateText(words, _toLanguageCode, _fromLanguageCode);
         }
     }
 }

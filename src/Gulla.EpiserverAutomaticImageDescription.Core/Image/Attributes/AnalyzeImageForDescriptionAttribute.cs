@@ -11,6 +11,10 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     /// </summary>
     public class AnalyzeImageForDescriptionAttribute : BaseImageDetailsAttribute
     {
+        private readonly string _languageCode;
+        private readonly bool _upperCaseFirstLetter;
+        private readonly bool _endWithDot;
+
         /// <summary>
         /// Analyze image and create a description. Apply to string properties.
         /// </summary>
@@ -19,22 +23,16 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         /// <param name="endWithDot">End description with a dot.</param>
         public AnalyzeImageForDescriptionAttribute(string languageCode = null, bool upperCaseFirstLetter = true, bool endWithDot = true)
         {
-            LanguageCode = languageCode;
-            UpperCaseFirstLetter = upperCaseFirstLetter;
-            EndWithDot = endWithDot;
+            _languageCode = languageCode;
+            _upperCaseFirstLetter = upperCaseFirstLetter;
+            _endWithDot = endWithDot;
         }
-
-        private string LanguageCode { get; }
-
-        private bool UpperCaseFirstLetter { get; }
-
-        private bool EndWithDot { get; }
 
         public override bool AnalyzeImageContent => true;
 
         public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
-            if (imageAnalyzerResult?.Description?.Captions == null)
+            if (imageAnalyzerResult?.Description?.Captions == null || imageAnalyzerResult.Description.Captions.Count == 0)
             {
                 return;
             }
@@ -48,12 +46,12 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         private string GetTranslatedDescription(string description, TranslationService translationService)
         {
-            if (LanguageCode != null)
+            if (_languageCode != null)
             {
-                description = translationService.TranslateText(new[] { description }, LanguageCode, TranslationLanguage.English).First();
+                description = translationService.TranslateText(new[] { description }, _languageCode, TranslationLanguage.English).First();
             }
 
-            return FormatDescription(description, UpperCaseFirstLetter, EndWithDot);
+            return FormatDescription(description, _upperCaseFirstLetter, _endWithDot);
         }
 
         private static string FormatDescription(string description, bool upperCaseFirstLetter, bool endWithDot)
