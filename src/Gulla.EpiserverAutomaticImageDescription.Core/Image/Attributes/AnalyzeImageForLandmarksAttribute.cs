@@ -8,7 +8,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     /// <summary>
     /// Analyze image for landmarks. Apply to string or IList&lt;string&gt; properties.
     /// </summary>
-    public class AnalyzeImageForLandmarks : BaseImageDetailsAttribute
+    public class AnalyzeImageForLandmarksAttribute : BaseImageDetailsAttribute
     {
         public override bool AnalyzeImageContent => true;
 
