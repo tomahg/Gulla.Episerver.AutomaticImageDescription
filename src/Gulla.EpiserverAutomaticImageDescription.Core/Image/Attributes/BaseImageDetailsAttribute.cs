@@ -20,7 +20,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         public virtual bool AnalyzeImageOcr => false;
 
         /// <summary>
-        /// Updates the property that is decorated with this attribute.
+        /// Updates the property that is decorated with this attribute. Call propertyInfo.SetValue(content, imageAnalyzerResult["DesiredValue"]).
         /// </summary>
         /// <param name="content">The content that holds the property that needs to be updated. If the property is defined on a local block, this will be a reference to the local block.</param>
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
@@ -32,6 +32,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         protected static bool IsBooleanProperty(PropertyInfo propertyInfo)
         {
             return propertyInfo.PropertyType == typeof(bool);
+        }
+
+        protected static bool IsIntProperty(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType == typeof(int);
         }
 
         protected static bool IsDoubleProperty(PropertyInfo propertyInfo)
