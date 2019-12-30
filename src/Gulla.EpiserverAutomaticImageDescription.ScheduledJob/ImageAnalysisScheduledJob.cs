@@ -24,7 +24,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
 
         public ImageAnalysisScheduledJob()
         {
-            var appSetting = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:ScheduledJob.MaxRequestsPerMinute"];
+            var appSetting = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ScheduledJob.MaxRequestsPerMinute"];
             if (appSetting != null)
             {
                 int.TryParse(appSetting, out _requestsPerMinute);

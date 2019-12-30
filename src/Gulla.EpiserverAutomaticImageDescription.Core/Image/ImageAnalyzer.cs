@@ -17,8 +17,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 {
     public static class ImageAnalyzer
     {
-        private static readonly string ComputerVisionApiSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:ComputerVision.SubscriptionKey"];
-        private static readonly string ComputerVisionEndpoint = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:ComputerVision.Endpoint"];
+        private static readonly string ComputerVisionApiSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.SubscriptionKey"];
+        private static readonly string ComputerVisionEndpoint = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.Endpoint"];
 
         private static ComputerVisionClient _client;
 
