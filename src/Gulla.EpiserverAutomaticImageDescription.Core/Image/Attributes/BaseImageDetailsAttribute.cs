@@ -20,13 +20,18 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         public virtual bool AnalyzeImageOcr => false;
 
         /// <summary>
+        /// To be overridden in derived class. Flag if the Update method needs translationService to be populated.
+        /// </summary>
+        public virtual bool RequireTranslations => false;
+
+        /// <summary>
         /// Updates the property that is decorated with this attribute. Call propertyInfo.SetValue(content, imageAnalyzerResult["DesiredValue"]).
         /// </summary>
         /// <param name="content">The content that holds the property that needs to be updated. If the property is defined on a local block, this will be a reference to the local block.</param>
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
         /// <param name="ocrResult"> OCR result.</param>
         /// <param name="propertyInfo">The PropertyInfo that needs to be updated.</param>
-        /// <param name="translationService">Service for translating text.</param>
+        /// <param name="translationService">Service for translating text. Will be null if translation is not configured in app settings.</param>
         public abstract void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService);
 
         protected static bool IsBooleanProperty(PropertyInfo propertyInfo)

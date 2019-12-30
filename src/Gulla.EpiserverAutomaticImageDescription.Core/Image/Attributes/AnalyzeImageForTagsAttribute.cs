@@ -12,18 +12,20 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     /// </summary>
     public class AnalyzeImageForTagsAttribute : BaseImageDetailsAttribute
     {
+        private readonly string _languageCode;
+
         /// <summary>
         /// Analyze image and create a list of tags. Apply to string or IList&lt;string&gt; properties.
         /// </summary>
         /// <param name="languageCode">Translate tags to specified language.</param>
         public AnalyzeImageForTagsAttribute(string languageCode = null)
         {
-            LanguageCode = languageCode;
+            _languageCode = languageCode;
         }
 
-        private string LanguageCode { get; }
-
         public override bool AnalyzeImageContent => true;
+
+        public override bool RequireTranslations => _languageCode != null;
 
         public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
@@ -46,12 +48,12 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         private IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, TranslationService translationService)
         {
-            if (LanguageCode == null)
+            if (_languageCode == null)
             {
                 return tags;
             }
 
-            return translationService.TranslateText(tags, LanguageCode, TranslationLanguage.English);
+            return translationService.TranslateText(tags, _languageCode, TranslationLanguage.English);
         }
     }
 }

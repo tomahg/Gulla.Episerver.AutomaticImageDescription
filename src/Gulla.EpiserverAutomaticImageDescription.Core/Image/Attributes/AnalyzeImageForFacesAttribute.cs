@@ -55,6 +55,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool AnalyzeImageContent => true;
 
+        public override bool RequireTranslations => _languageCode != null;
+
         public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {
             if (imageAnalyzerResult.Faces == null || imageAnalyzerResult.Faces.Count == 0)
@@ -72,7 +74,6 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             {
                 faces = imageAnalyzerResult.Faces.Select(x => $"{GetTranslatedGender(x.Gender, translationService)} ({x.Age})");
             }
-            
 
             if (IsStringProperty(propertyInfo))
             {
@@ -101,7 +102,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         private string GetTranslatedGender(Gender? genderEnum, TranslationService translationService)
         {
-            var gender = (genderEnum.HasValue ? (genderEnum == Gender.Male ? "Male" : "Female") : "Unknown");
+            var gender = (genderEnum.HasValue ? (genderEnum == Gender.Male ? Gender.Male.ToString() : Gender.Female.ToString()) : "Person");
 
             if (_languageCode != null)
             {

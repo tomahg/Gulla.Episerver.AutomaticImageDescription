@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Configuration;
 
 namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
 {
@@ -13,7 +13,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
     public class AuthToken
     {
         /// URL of the token service
-        private static readonly Uri ServiceUrl = new Uri(WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:TokenService.Endpoint"]);
+        private static Uri _serviceUrl;
         /// Name of header used to pass the subscription key to the token service
         private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
         /// After obtaining a valid token, this class will cache it for this duration.
@@ -34,16 +34,23 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
         /// <summary>
         /// Creates a client to obtain an access token.
         /// </summary>
+        /// <param name="endpoint">URL to token service.</param>
         /// <param name="key">Subscription key to use to get an authentication token.</param>
-        public AuthToken(string key)
+        public AuthToken(string endpoint, string key)
         {
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                throw new ArgumentNullException("key", "A subscription key is required");
+                throw new ArgumentNullException(nameof(endpoint), "An endpoint to token service is required");
             }
 
-            this.SubscriptionKey = key;
-            this.RequestStatusCode = HttpStatusCode.InternalServerError;
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentNullException(nameof(key), "A subscription key is required");
+            }
+
+            SubscriptionKey = key;
+            _serviceUrl = new Uri(endpoint);
+            RequestStatusCode = HttpStatusCode.InternalServerError;
         }
 
         /// <summary>
@@ -71,9 +78,9 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
             using (var request = new HttpRequestMessage())
             {
                 request.Method = HttpMethod.Post;
-                request.RequestUri = ServiceUrl;
+                request.RequestUri = _serviceUrl;
                 request.Content = new StringContent(string.Empty);
-                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, this.SubscriptionKey);
+                request.Headers.TryAddWithoutValidation(OcpApimSubscriptionKeyHeader, SubscriptionKey);
                 client.Timeout = TimeSpan.FromSeconds(2);
                 var response = await client.SendAsync(request);
                 RequestStatusCode = response.StatusCode;
@@ -113,13 +120,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
 
             while (!task.IsCompleted)
             {
-                System.Threading.Thread.Yield();
+                Thread.Yield();
             }
             if (task.IsFaulted)
             {
                 throw task.Exception;
             }
-            else if (task.IsCanceled)
+
+            if (task.IsCanceled)
             {
                 throw new Exception("Timeout obtaining access token.");
             }

@@ -30,6 +30,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         }
 
         public override bool AnalyzeImageOcr => true;
+        public override bool RequireTranslations => _toLanguageCode != null;
 
         public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
         {

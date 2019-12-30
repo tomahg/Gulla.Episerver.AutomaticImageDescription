@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 
             ImageAnalysis imageAnalysisResult = null;
             OcrResult ocrResult = null;
+            TranslationService translationService = null;
 
             var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
             if (analyzeAttributes.Any(x => x.Attribute.AnalyzeImageContent))
@@ -41,9 +43,15 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             {
                 ocrResult = OcrAnalyzeImage(GetImageStream(image));
             }
-
-            // Creates authorization token + empty cache.
-            var translationService = new TranslationService(); 
+            if (analyzeAttributes.Any(x => x.Attribute.RequireTranslations))
+            {
+                // Creates authorization token + empty cache.
+                translationService = TranslationService.GetInstanceIfConfigured();
+                if (translationService == null)
+                {
+                    throw new ConfigurationErrorsException($"The attribute {analyzeAttributes.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
+                }
+            }
             
             foreach (var attributeContentProperty in analyzeAttributes)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -14,16 +15,28 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
     public class TranslationService
     {
         private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:Translator.SubscriptionKey"];
+        private static readonly string TranslatorTokenServiceEndpoint = WebConfigurationManager.AppSettings["Gulla.EpiserverAutomaticImageDescription:Translator.TokenService.Endpoint"];
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
         private readonly string _requestToken;
         private readonly TranslationCache _cache;
 
-        public TranslationService()
+        private TranslationService()
         {
-            var auth = new AuthToken(TranslatorSubscriptionKey);
+            var auth = new AuthToken(TranslatorTokenServiceEndpoint, TranslatorSubscriptionKey);
             _requestToken = Task.Run(() => auth.GetAccessTokenAsync()).Result;
             _cache = new TranslationCache();
         }
+
+        public static TranslationService GetInstanceIfConfigured()
+        {
+            if (string.IsNullOrEmpty(TranslatorSubscriptionKey) || string.IsNullOrEmpty(TranslatorTokenServiceEndpoint))
+            {
+                return null;
+            }
+
+            return new TranslationService();
+        }
+
 
         public IEnumerable<string> TranslateText(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
