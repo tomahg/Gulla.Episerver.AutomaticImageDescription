@@ -10,6 +10,7 @@ using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface;
 
 namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
 {

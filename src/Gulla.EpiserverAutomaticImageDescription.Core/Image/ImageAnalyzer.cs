@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
+using Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface;
 using Gulla.EpiserverAutomaticImageDescription.Core.Image.Models;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
@@ -57,6 +58,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             {
                 attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property, translationService);
             }
+
+            MarkAnalysisAsCompleted(image);
         }
 
         private static IEnumerable<ContentProperty> GetPropertiesWithAttribute(IContent content, Type attribute)
@@ -148,6 +151,15 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
         private static Stream GetImageStream(ImageData image)
         {
             return image.BinaryData.OpenRead();
+        }
+
+        private static void MarkAnalysisAsCompleted(ImageData image)
+        {
+            var analyzableImage = image as IAnalyzableImage;
+            if (analyzableImage != null)
+            {
+                analyzableImage.ImageAnalysisCompleted = true;
+            }
         }
 
         private static ComputerVisionClient Client =>

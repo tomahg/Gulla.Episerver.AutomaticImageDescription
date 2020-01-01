@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
+﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface
 {
     public interface IAnalyzableImage
     {
