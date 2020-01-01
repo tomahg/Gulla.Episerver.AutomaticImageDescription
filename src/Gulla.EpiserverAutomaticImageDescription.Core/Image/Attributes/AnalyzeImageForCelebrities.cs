@@ -26,11 +26,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsStringProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(string.Join(", ", celebrities));
+                propertyAccess.SetValue(string.Join(", ", celebrities));
             }
             else if (IsStringListProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(celebrities.ToList());
+                propertyAccess.SetValue(celebrities.ToList());
             }
         }
     }

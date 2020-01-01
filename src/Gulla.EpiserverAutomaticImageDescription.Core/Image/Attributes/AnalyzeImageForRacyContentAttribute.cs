@@ -21,15 +21,15 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsBooleanProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.IsRacyContent);
+                propertyAccess.SetValue(imageAnalyzerResult.Adult.IsRacyContent);
             }
             else if (IsDoubleProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.RacyScore);
+                propertyAccess.SetValue(imageAnalyzerResult.Adult.RacyScore);
             }
             else if (IsStringProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
+                propertyAccess.SetValue(imageAnalyzerResult.Adult.RacyScore.ToString(CultureInfo.InvariantCulture));
             }
         }
     }

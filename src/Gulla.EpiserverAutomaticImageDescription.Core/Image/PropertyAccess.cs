@@ -15,9 +15,14 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             Property = propertyInfo;
         }
 
-        public void SetPropertyValue(object value)
+        public void SetValue(object value)
         {
             Property.SetValue(_content, value);
+        }
+
+        public object GetValue()
+        {
+            return Property.GetValue(_content);
         }
 
         public ImageData Image { get; }

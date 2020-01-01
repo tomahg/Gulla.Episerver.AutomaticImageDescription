@@ -42,7 +42,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsStringProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(string.Join(" ", ocrTranslated));
+                propertyAccess.SetValue(string.Join(" ", ocrTranslated));
             }
         }
 

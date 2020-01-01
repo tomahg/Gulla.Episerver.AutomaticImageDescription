@@ -27,7 +27,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
         /// <summary>
         /// Updates the property that is decorated with this attribute. Call propertyInfo.SetValue(content, imageAnalyzerResult["DesiredValue"]).
         /// </summary>
-        /// <param name="propertyAccess">Object with method used to SetPropertyValue.</param>
+        /// <param name="propertyAccess">Object with method used to SetValue of the property decorated with this attribute.</param>
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
         /// <param name="ocrResult"> OCR result.</param>
         /// <param name="translationService">Service for translating text. Will be null if translation is not configured in app settings.</param>

@@ -41,7 +41,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
             if (IsStringProperty(propertyAccess.Property))
             {
                 var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), translationService);
-                propertyAccess.SetPropertyValue(descriptionTranslated);
+                propertyAccess.SetValue(descriptionTranslated);
             }
         }
 

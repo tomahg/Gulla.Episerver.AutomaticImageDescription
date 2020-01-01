@@ -20,11 +20,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
             if (IsStringProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
+                propertyAccess.SetValue(string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
             }
             else if (IsStringListProperty(propertyAccess.Property))
             {
-                propertyAccess.SetPropertyValue(imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
+                propertyAccess.SetValue(imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
             }
         }
     }
