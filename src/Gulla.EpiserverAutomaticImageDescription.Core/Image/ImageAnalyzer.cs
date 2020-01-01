@@ -31,28 +31,10 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
                 return;
             }
 
-            ImageAnalysis imageAnalysisResult = null;
-            OcrResult ocrResult = null;
-            TranslationService translationService = null;
-
             var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
-            if (analyzeAttributes.Any(x => x.Attribute.AnalyzeImageContent))
-            {
-                imageAnalysisResult = AnalyzeImage(GetImageStream(image));
-            }
-            if (analyzeAttributes.Any(x => x.Attribute.AnalyzeImageOcr))
-            {
-                ocrResult = OcrAnalyzeImage(GetImageStream(image));
-            }
-            if (analyzeAttributes.Any(x => x.Attribute.RequireTranslations))
-            {
-                // Creates authorization token + empty cache.
-                translationService = TranslationService.GetInstanceIfConfigured();
-                if (translationService == null)
-                {
-                    throw new ConfigurationErrorsException($"The attribute {analyzeAttributes.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
-                }
-            }
+            var imageAnalysisResult = GetImageAnalysisResultOrDefault(image, analyzeAttributes);
+            var ocrResult = GetOcrResultOrDefault(image, analyzeAttributes);
+            var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
 
             foreach (var attributeContentProperty in analyzeAttributes)
             {
@@ -108,6 +90,34 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
             }
         }
 
+        private static ImageAnalysis GetImageAnalysisResultOrDefault(ImageData image, IEnumerable<AttributeContentProperty> attributes)
+        {
+            return attributes.Any(x => x.Attribute.AnalyzeImageContent) ? AnalyzeImage(GetImageStream(image)) : null;
+        }
+
+        private static OcrResult GetOcrResultOrDefault(ImageData image, IEnumerable<AttributeContentProperty> attributes)
+        {
+            return attributes.Any(x => x.Attribute.AnalyzeImageOcr) ? OcrAnalyzeImage(GetImageStream(image)) : null;
+        }
+
+        private static TranslationService GetTranslationServiceOrDefault(IEnumerable<AttributeContentProperty> attributes)
+        {
+            var attributeList = attributes.ToList();
+            if (attributeList.Any(x => x.Attribute.RequireTranslations))
+            {
+                // Creates authorization token + empty cache.
+                var translationService = TranslationService.GetInstanceIfConfigured();
+                if (translationService == null)
+                {
+                    throw new ConfigurationErrorsException($"The attribute {attributeList.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
+                }
+
+                return translationService;
+            }
+
+            return null;
+        }
+
         private static ImageAnalysis AnalyzeImage(Stream image)
         {
             var task = Task.Run(() => AnalyzeImageFeatures(image));
@@ -156,8 +166,8 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
 
         private static void MarkAnalysisAsCompleted(ImageData image)
         {
-            var analyzableImage = image as IAnalyzableImage;
-            if (analyzableImage != null)
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (image is IAnalyzableImage analyzableImage)
             {
                 analyzableImage.ImageAnalysisCompleted = true;
             }
