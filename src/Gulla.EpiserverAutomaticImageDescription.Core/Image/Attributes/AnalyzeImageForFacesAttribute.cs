@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
@@ -57,7 +56,7 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool RequireTranslations => _languageCode != null;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
+        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService)
         {
             if (imageAnalyzerResult.Faces == null || imageAnalyzerResult.Faces.Count == 0)
             {
@@ -75,13 +74,13 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
                 faces = imageAnalyzerResult.Faces.Select(x => $"{GetTranslatedGender(x.Gender, translationService)} ({x.Age})");
             }
 
-            if (IsStringProperty(propertyInfo))
+            if (IsStringProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, string.Join(", ", faces));
+                propertyAccess.SetPropertyValue(string.Join(", ", faces));
             }
-            else if (IsStringListProperty(propertyInfo))
+            else if (IsStringListProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, faces.ToList());
+                propertyAccess.SetPropertyValue(faces.ToList());
             }
         }
 

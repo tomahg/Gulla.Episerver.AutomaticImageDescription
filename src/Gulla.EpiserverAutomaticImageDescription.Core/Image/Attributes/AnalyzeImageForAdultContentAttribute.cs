@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Reflection;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
@@ -13,24 +12,24 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     {
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
+        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService)
         {
             if (imageAnalyzerResult.Adult == null)
             {
                 return;
             }
 
-            if (IsBooleanProperty(propertyInfo))
+            if (IsBooleanProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.IsAdultContent);
+                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.IsAdultContent);
             }
-            else if (IsDoubleProperty(propertyInfo))
+            else if (IsDoubleProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.AdultScore);
+                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.AdultScore);
             }
-            else if (IsStringProperty(propertyInfo))
+            else if (IsStringProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
+                propertyAccess.SetPropertyValue(imageAnalyzerResult.Adult.AdultScore.ToString(CultureInfo.InvariantCulture));
             }
         }
     }

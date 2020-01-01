@@ -53,10 +53,11 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
                     throw new ConfigurationErrorsException($"The attribute {analyzeAttributes.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
                 }
             }
-            
+
             foreach (var attributeContentProperty in analyzeAttributes)
             {
-                attributeContentProperty.Attribute.Update(attributeContentProperty.Content, imageAnalysisResult, ocrResult, attributeContentProperty.Property, translationService);
+                var propertyAccess = new PropertyAccess(image, attributeContentProperty.Content, attributeContentProperty.Property);
+                attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, ocrResult, translationService);
             }
 
             MarkAnalysisAsCompleted(image);

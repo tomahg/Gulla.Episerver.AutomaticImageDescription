@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Reflection;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
@@ -32,17 +31,17 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
 
         public override bool RequireTranslations => _languageCode != null;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
+        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService)
         {
             if (imageAnalyzerResult?.Description?.Captions == null || imageAnalyzerResult.Description.Captions.Count == 0)
             {
                 return;
             }
 
-            if (IsStringProperty(propertyInfo))
+            if (IsStringProperty(propertyAccess.Property))
             {
                 var descriptionTranslated = GetTranslatedDescription(imageAnalyzerResult.Description.Captions.Select(caption => caption.Text).FirstOrDefault(), translationService);
-                propertyInfo.SetValue(content, descriptionTranslated);
+                propertyAccess.SetPropertyValue(descriptionTranslated);
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Reflection;
 using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
@@ -12,20 +11,20 @@ namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
     {
         public override bool AnalyzeImageContent => true;
 
-        public override void Update(object content, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, PropertyInfo propertyInfo, TranslationService translationService)
+        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService)
         {
             if (imageAnalyzerResult.Brands == null || imageAnalyzerResult.Brands.Count == 0)
             {
                 return;
             }
 
-            if (IsStringProperty(propertyInfo))
+            if (IsStringProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
+                propertyAccess.SetPropertyValue(string.Join(", ", imageAnalyzerResult.Brands.Select(x => x.Name)));
             }
-            else if (IsStringListProperty(propertyInfo))
+            else if (IsStringListProperty(propertyAccess.Property))
             {
-                propertyInfo.SetValue(content, imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
+                propertyAccess.SetPropertyValue(imageAnalyzerResult.Brands.Select(x => x.Name).ToList());
             }
         }
     }
