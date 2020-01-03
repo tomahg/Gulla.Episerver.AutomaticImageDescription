@@ -9,7 +9,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A scheduled job that automatically populate properties based on image content.</summary>
     <copyright>Copyright 2019</copyright>	
-    <repository type="git" url="https://github.com/tomahg/Gulla.EpiserverCensorFaces" branch="master" />
+    <repository type="git" url="https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription" branch="master" />
     <releaseNotes>Initial version.</releaseNotes>
 	<tags>episerver,azure,image,alt-text,description,ocr</tags>
 	<description>A scheculed job that will update all existing images. Will use Azure Cognitive Services Vision API to analyze images uploaded to Episerver, and populate properties with data describing the images.</description>
