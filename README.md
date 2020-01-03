@@ -1,6 +1,6 @@
 # Gulla.Episerver.AutomaticImageDescription
 
-## Autmatic metadata for images in Episerver
+## Automatic metadata for images in Episerver
 Will use Microsoft Azure Cognitive Services, Computer Vision API in combination with Translator Text API, to generate various metadata for images.
 
 
