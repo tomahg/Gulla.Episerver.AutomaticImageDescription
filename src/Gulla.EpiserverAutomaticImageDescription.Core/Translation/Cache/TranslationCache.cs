@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Cache
 {
     public class TranslationCache : Dictionary<string, IEnumerable<string>>
     {

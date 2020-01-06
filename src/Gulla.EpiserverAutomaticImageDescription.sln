@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gulla.EpiserverAutomaticImageDescription.Core", "Gulla.EpiserverAutomaticImageDescription.Core\Gulla.EpiserverAutomaticImageDescription.Core.csproj", "{81A048FB-0625-473F-A0BB-56A4B083CFFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gulla.Episerver.AutomaticImageDescription.Core", "Gulla.EpiserverAutomaticImageDescription.Core\Gulla.Episerver.AutomaticImageDescription.Core.csproj", "{81A048FB-0625-473F-A0BB-56A4B083CFFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gulla.EpiserverAutomaticImageDescription.ScheduledJob", "Gulla.EpiserverAutomaticImageDescription.ScheduledJob\Gulla.EpiserverAutomaticImageDescription.ScheduledJob.csproj", "{DC1FC73E-C5E6-41C9-9167-C452C2FDF18D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gulla.Episerver.AutomaticImageDescription.ScheduledJob", "Gulla.EpiserverAutomaticImageDescription.ScheduledJob\Gulla.Episerver.AutomaticImageDescription.ScheduledJob.csproj", "{DC1FC73E-C5E6-41C9-9167-C452C2FDF18D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

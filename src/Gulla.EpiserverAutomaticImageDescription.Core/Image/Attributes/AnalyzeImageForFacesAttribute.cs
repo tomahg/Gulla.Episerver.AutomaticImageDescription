@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image for faces. Apply to string or IList&lt;string&gt; properties.

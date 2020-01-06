@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Models
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Models
 {
     public class AttributeContentProperty
     {

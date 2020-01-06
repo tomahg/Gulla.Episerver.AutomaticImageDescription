@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface
+﻿namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface
 {
     public interface IAnalyzableImage
     {

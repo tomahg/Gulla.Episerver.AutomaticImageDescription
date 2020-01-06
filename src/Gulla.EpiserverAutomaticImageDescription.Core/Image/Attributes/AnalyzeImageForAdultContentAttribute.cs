@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image for adult content. Apply to bool properties for true/false or double/string for adult score.

@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth
 {
     /// <summary>
     /// Client to call Cognitive Services Azure Auth Token service in order to get an access token.

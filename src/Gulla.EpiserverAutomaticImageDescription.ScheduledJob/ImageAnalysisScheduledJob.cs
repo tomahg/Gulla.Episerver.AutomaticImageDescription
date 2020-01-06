@@ -9,10 +9,10 @@ using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
 
-namespace Gulla.EpiserverAutomaticImageDescription.ScheduledJob
+namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
 {
     [ScheduledPlugIn(DisplayName = "Analyze all images, update metadata")]
     public class ImageAnalysisScheduledJob : ScheduledJobBase

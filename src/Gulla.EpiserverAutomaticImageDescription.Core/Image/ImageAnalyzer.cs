@@ -7,14 +7,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image.Interface;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image.Models;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image.Models;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 {
     public static class ImageAnalyzer
     {

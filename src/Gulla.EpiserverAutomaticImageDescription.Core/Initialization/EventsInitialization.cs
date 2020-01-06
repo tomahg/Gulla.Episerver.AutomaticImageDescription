@@ -3,9 +3,9 @@ using EPiServer.Core;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
-using Gulla.EpiserverAutomaticImageDescription.Core.Image;
+using Gulla.Episerver.AutomaticImageDescription.Core.Image;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Initialization
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Initialization
 {
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]

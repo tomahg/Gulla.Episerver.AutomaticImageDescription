@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.DTO
+﻿namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.DTO
 {
     public class Translation
     {

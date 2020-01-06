@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Configuration;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation.Auth;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation.DTO;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Cache;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation.DTO;
 using Newtonsoft.Json;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
 {
     public class TranslationService
     {

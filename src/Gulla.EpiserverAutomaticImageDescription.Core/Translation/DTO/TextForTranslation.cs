@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.DTO
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.DTO
 {
     [JsonObject]
     public class TextForTranslation

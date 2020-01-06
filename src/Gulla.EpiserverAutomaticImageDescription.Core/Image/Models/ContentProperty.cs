@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Models
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Models
 {
     public class ContentProperty
     {

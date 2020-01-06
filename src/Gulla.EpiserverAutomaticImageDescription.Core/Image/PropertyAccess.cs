@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
-using System.Runtime.InteropServices;
 using EPiServer.Core;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 {
     public class PropertyAccess
     {

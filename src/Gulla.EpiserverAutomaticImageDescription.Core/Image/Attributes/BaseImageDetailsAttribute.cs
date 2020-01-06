@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using Gulla.EpiserverAutomaticImageDescription.Core.Translation;
+using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
-namespace Gulla.EpiserverAutomaticImageDescription.Core.Image.Attributes
+namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
     public abstract class BaseImageDetailsAttribute : Attribute
     {

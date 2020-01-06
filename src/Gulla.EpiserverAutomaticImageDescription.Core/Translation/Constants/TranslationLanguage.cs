@@ -1,4 +1,4 @@
-﻿namespace Gulla.EpiserverAutomaticImageDescription.Core.Translation.Constants
+﻿namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Constants
 {
     // Source: https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support
     public class TranslationLanguage
