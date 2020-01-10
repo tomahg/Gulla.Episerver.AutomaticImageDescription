@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</id>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
     <title>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
@@ -15,7 +15,7 @@
 	<tags>episerver,azure,image,alt-text,description,ocr</tags>
 	<description>A scheculed job that will update all existing images. Will use Azure Cognitive Services Vision API to analyze images uploaded to Episerver, and populate properties with data describing the images.</description>
   <dependencies>
-    <dependency id="Gulla.EpiserverAutomaticImageDescription" version="1.0.1" />
+    <dependency id="Gulla.EpiserverAutomaticImageDescription" version="1.0.0" />
 	  <dependency id="EPiServer.Framework" version="11.1.0" />
 	  <dependency id="EPiServer.CMS.Core" version="11.1.0" />
 	</dependencies>	
