@@ -17,7 +17,7 @@ If you want to use the translation capabilities, also create an Azure Cognitive 
  If you will be using Enlish-only metadata, you do not need the Translator Text-resource. 
 
 ## More information
-Check out [this blog post](https://blog.novacare.no/episerver-automatic-image-meta-data). _(coming)_
+Check out [this blog post](https://blog.novacare.no/episerver-automatic-image-metadata/).
 
 ## Get it
-Grab it from this repository or install the nuget available on nuget.org as [Gulla.Episerver.AutomaticImageDescription](https://www.nuget.org/).
+Grab it from this repository or install the nuget available on nuget.org as [Gulla.Episerver.AutomaticImageDescription](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
