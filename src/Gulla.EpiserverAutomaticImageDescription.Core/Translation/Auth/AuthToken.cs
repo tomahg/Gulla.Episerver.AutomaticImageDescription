@@ -21,9 +21,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth
         private static readonly TimeSpan TokenCacheDuration = new TimeSpan(0, 5, 0);
 
         /// Cache the value of the last valid token obtained from the token service.
-        private string storedTokenValue = string.Empty;
+        private string _storedTokenValue = string.Empty;
         /// When the last valid token was obtained.
-        private DateTime storedTokenTime = DateTime.MinValue;
+        private DateTime _storedTokenTime = DateTime.MinValue;
 
         /// Gets the subscription key.
         public string SubscriptionKey { get; private set; } = string.Empty;
@@ -69,9 +69,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth
             if (SubscriptionKey == string.Empty) return string.Empty;
 
             // Re-use the cached token if there is one.
-            if ((DateTime.Now - storedTokenTime) < TokenCacheDuration)
+            if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
             {
-                return storedTokenValue;
+                return _storedTokenValue;
             }
 
             using (var client = new HttpClient())
@@ -86,9 +86,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth
                 RequestStatusCode = response.StatusCode;
                 response.EnsureSuccessStatusCode();
                 var token = await response.Content.ReadAsStringAsync();
-                storedTokenTime = DateTime.Now;
-                storedTokenValue = "Bearer " + token;
-                return storedTokenValue;
+                _storedTokenTime = DateTime.Now;
+                _storedTokenValue = "Bearer " + token;
+                return _storedTokenValue;
             }
         }
 
@@ -107,9 +107,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation.Auth
         public string GetAccessToken()
         {
             // Re-use the cached token if there is one.
-            if ((DateTime.Now - storedTokenTime) < TokenCacheDuration)
+            if ((DateTime.Now - _storedTokenTime) < TokenCacheDuration)
             {
-                return storedTokenValue;
+                return _storedTokenValue;
             }
 
             string accessToken = null;
