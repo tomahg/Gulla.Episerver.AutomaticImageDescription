@@ -14,7 +14,7 @@ If you want to use the translation capabilities, also create an Azure Cognitive 
   - Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionKey
   - Gulla.Episerver.AutomaticImageDescription:Translator.TokenService.Endpoint
 
- If you will be using Enlish-only metadata, you do not need the Translator Text-resource. 
+ If you will be using English-only metadata, you do not need the Translator Text-resource. 
 
 ## More information
 Check out [this blog post](https://blog.novacare.no/episerver-automatic-image-metadata/).
