@@ -20,4 +20,4 @@ If you want to use the translation capabilities, also create an Azure Cognitive 
 Check out [this blog post](https://blog.novacare.no/episerver-automatic-image-metadata/).
 
 ## Get it
-Grab it from this repository or install the nuget available on nuget.org as [Gulla.Episerver.AutomaticImageDescription](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
+Grab it from this repository or install the nuget available on the [Episerver NuGet feed](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
