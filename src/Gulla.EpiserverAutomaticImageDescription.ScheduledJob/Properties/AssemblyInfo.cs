@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Gulla.EpiserverAutomaticImageDescription.ScheduledJob")]
+[assembly: AssemblyTitle("Gulla.Episerver.AutomaticImageDescription.ScheduledJob")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Gulla.EpiserverAutomaticImageDescription.ScheduledJob")]
+[assembly: AssemblyCompany("Tomas Hensrud Gulla")]
+[assembly: AssemblyProduct("Gulla.Episerver.AutomaticImageDescription.ScheduledJob")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
