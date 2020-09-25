@@ -14,7 +14,6 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
     public class TranslationService
     {
         private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionKey"];
-        private static readonly string TranslatorTokenServiceEndpoint = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.TokenService.Endpoint"];
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
         private readonly TranslationCache _cache;
 
@@ -25,7 +24,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
 
         public static TranslationService GetInstanceIfConfigured()
         {
-            if (string.IsNullOrEmpty(TranslatorSubscriptionKey) || string.IsNullOrEmpty(TranslatorTokenServiceEndpoint))
+            if (string.IsNullOrEmpty(TranslatorSubscriptionKey))
             {
                 return null;
             }

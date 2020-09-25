@@ -105,7 +105,6 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             var attributeList = attributes.ToList();
             if (attributeList.Any(x => x.Attribute.RequireTranslations))
             {
-                // Creates authorization token + empty cache.
                 var translationService = TranslationService.GetInstanceIfConfigured();
                 if (translationService == null)
                 {
