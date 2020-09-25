@@ -83,7 +83,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
         private static bool ImageIsOfSupportedFormat(ImageData imageData)
         {
-            return imageData.Name.ToLower().EndsWith(".jpg") || imageData.Name.ToLower().EndsWith(".png") || imageData.Name.ToLower().EndsWith(".bmp");
+            return imageData.Name.ToLower().EndsWith(".jpg") || imageData.Name.ToLower().EndsWith(".jpeg") || imageData.Name.ToLower().EndsWith(".png") || imageData.Name.ToLower().EndsWith(".bmp");
         }
 
         private static IEnumerable<ContentProperty> GetPropertiesWithAttribute(IContent content, Type attribute)
