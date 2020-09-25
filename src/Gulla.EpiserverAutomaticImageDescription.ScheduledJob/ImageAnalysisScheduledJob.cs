@@ -94,7 +94,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
             var writableImage = image.CreateWritableClone() as ImageData;
             ImageAnalyzer.AnalyzeImageAndUpdateMetaData(writableImage);
 
-            var analyzableImage = image as IAnalyzableImage;
+            var analyzableImage = writableImage as IAnalyzableImage;
             if (analyzableImage != null)
             {
                 analyzableImage.ImageAnalysisCompleted = true;
