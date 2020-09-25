@@ -37,7 +37,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
         public override string Execute()
         {
             OnStatusChanged("Collecting information about images...");
-            _images = GetAllImages().Where(IsNotProcessed);
+            _images = GetAllImages().Where(IsNotProcessed).ToList();
             _analyzeCount = 0;
 
             foreach (var image in _images)
@@ -47,15 +47,16 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
                     return "Job stopped. " + GetStatus();
                 }
 
-                OnStatusChanged($"Analyzing image {_analyzeCount + 1}...");
-                UpdateImage(image);
+                OnStatusChanged($"Analyzing image number {_analyzeCount + 1}...");
+                if (UpdateImage(image))
+                {
+                    _analyzeCount++;
+                }
 
                 if (_requestsPerMinute > 0)
                 {
-                    Thread.Sleep(60/ _requestsPerMinute * 1000);
+                    Thread.Sleep(60 / _requestsPerMinute * 1000);
                 }
-
-                _analyzeCount++;
             }
 
             OnStatusChanged("Finished!");
@@ -89,18 +90,12 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
             return analyzableImage == null || !analyzableImage.ImageAnalysisCompleted;
         }
 
-        private void UpdateImage(ImageData image)
+        private bool UpdateImage(ImageData image)
         {
             var writableImage = image.CreateWritableClone() as ImageData;
-            ImageAnalyzer.AnalyzeImageAndUpdateMetaData(writableImage);
-
-            var analyzableImage = writableImage as IAnalyzableImage;
-            if (analyzableImage != null)
-            {
-                analyzableImage.ImageAnalysisCompleted = true;
-            }
-
+            var updated = ImageAnalyzer.AnalyzeImageAndUpdateMetaData(writableImage);
             _contentRepository.Save(writableImage, SaveAction.Patch, AccessLevel.NoAccess);
+            return updated;
         }
 
         private string GetStatus()

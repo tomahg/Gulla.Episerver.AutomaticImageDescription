@@ -4,7 +4,6 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
@@ -25,31 +24,41 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
         private static ComputerVisionClient _client;
 
-        public static void AnalyzeImageAndUpdateMetaData(ImageData image)
+        public static bool AnalyzeImageAndUpdateMetaData(ImageData image)
         {
             var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(image, typeof(BaseImageDetailsAttribute)).ToList();
             if (!imagePropertiesWithAnalyzeAttributes.Any())
             {
-                return;
+                MarkAnalysisAsCompleted(image);
+                return false;
             }
 
             if (!ImageIsOfSupportedFormat(image) || !ImageIsOfSupportedFileSizeAndDimensions(image))
             {
-                return;
+                MarkAnalysisAsCompleted(image);
+                return false;
             }
 
-            var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
-            var imageAnalysisResult = GetImageAnalysisResultOrDefault(image, analyzeAttributes);
-            var ocrResult = GetOcrResultOrDefault(image, analyzeAttributes);
-            var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
-
-            foreach (var attributeContentProperty in analyzeAttributes)
+            try
             {
-                var propertyAccess = new PropertyAccess(image, attributeContentProperty.Content, attributeContentProperty.Property);
-                attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, ocrResult, translationService);
+                var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
+                var imageAnalysisResult = GetImageAnalysisResultOrDefault(image, analyzeAttributes);
+                var ocrResult = GetOcrResultOrDefault(image, analyzeAttributes);
+                var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
+
+                foreach (var attributeContentProperty in analyzeAttributes)
+                {
+                    var propertyAccess = new PropertyAccess(image, attributeContentProperty.Content, attributeContentProperty.Property);
+                    attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, ocrResult, translationService);
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
 
             MarkAnalysisAsCompleted(image);
+            return true;
         }
 
         private static bool ImageIsOfSupportedFileSizeAndDimensions(ImageData imageData)

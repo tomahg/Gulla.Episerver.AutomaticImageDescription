@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription</id>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <title>Gulla.Episerver.AutomaticImageDescription</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
@@ -13,7 +13,7 @@
     <projectUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription</projectUrl>
     <releaseNotes>Validate image dimensions, filesize and file extension before sending image to azure cognitive services.</releaseNotes>
 	<tags>episerver,azure,image,alt-text,description,ocr</tags>
-	<description>Add .jpeg to list of allowed file types.</description>
+	<description>Count only images actually updated</description>
   <dependencies>
 	  <dependency id="EPiServer.Framework" version="[11.1.0, 12.0.0)" />
 	  <dependency id="EPiServer.CMS.AspNet" version="[11.1.0, 12.0.0)" />
