@@ -4,9 +4,11 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
+using EPiServer.Framework.Blobs;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Models;
@@ -31,6 +33,11 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 return;
             }
 
+            if (!ImageIsOfSupportedFormat(image) || !ImageIsOfSupportedFileSizeAndDimensions(image))
+            {
+                return;
+            }
+
             var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
             var imageAnalysisResult = GetImageAnalysisResultOrDefault(image, analyzeAttributes);
             var ocrResult = GetOcrResultOrDefault(image, analyzeAttributes);
@@ -43,6 +50,40 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             }
 
             MarkAnalysisAsCompleted(image);
+        }
+
+        private static bool ImageIsOfSupportedFileSizeAndDimensions(ImageData imageData)
+        {
+            var imageBlob = imageData.BinaryData;
+
+            using (var stream = imageBlob.OpenRead())
+            {
+                var image = System.Drawing.Image.FromStream(stream, false);
+
+                if (image.Width < 50 || image.Height < 50 || image.Width > 4200 || image.Height > 4200)
+                {
+                    image.Dispose();
+                    return false;
+                }
+
+                var path = ((FileBlob)imageBlob).FilePath;
+                var numBytes = new FileInfo(path).Length;
+
+                if (numBytes > 4 * 1024 * 1024)
+                {
+                    image.Dispose();
+                    return false;
+                }
+
+                image.Dispose();
+            }
+
+            return true;
+        }
+
+        private static bool ImageIsOfSupportedFormat(ImageData imageData)
+        {
+            return imageData.Name.ToLower().EndsWith(".jpg") || imageData.Name.ToLower().EndsWith(".png") || imageData.Name.ToLower().EndsWith(".bmp");
         }
 
         private static IEnumerable<ContentProperty> GetPropertiesWithAttribute(IContent content, Type attribute)
