@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Configuration;
 using EPiServer.Core;
-using EPiServer.Framework.Blobs;
+using EPiServer.Logging;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Models;
@@ -21,43 +21,41 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
     {
         private static readonly string ComputerVisionApiSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.SubscriptionKey"];
         private static readonly string ComputerVisionEndpoint = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.Endpoint"];
+        private static readonly ILogger Log = LogManager.GetLogger();
 
         private static ComputerVisionClient _client;
 
-        public static bool AnalyzeImageAndUpdateMetaData(ImageData image)
+        public static bool AnalyzeImageAndUpdateMetaData(ImageData imageData)
         {
-            var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(image, typeof(BaseImageDetailsAttribute)).ToList();
-            if (!imagePropertiesWithAnalyzeAttributes.Any())
-            {
-                MarkAnalysisAsCompleted(image);
-                return false;
-            }
-
-            if (!ImageIsOfSupportedFormat(image) || !ImageIsOfSupportedFileSizeAndDimensions(image))
-            {
-                MarkAnalysisAsCompleted(image);
-                return false;
-            }
-
             try
             {
+                var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(imageData, typeof(BaseImageDetailsAttribute)).ToList();
+
+                if (!imagePropertiesWithAnalyzeAttributes.Any() ||
+                    !ImageIsOfSupportedFormat(imageData) ||
+                    !ImageIsOfSupportedFileSizeAndDimensions(imageData))
+                {
+                    MarkAnalysisAsCompleted(imageData);
+                    return false;
+                }
+
                 var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
-                var imageAnalysisResult = GetImageAnalysisResultOrDefault(image, analyzeAttributes);
-                var ocrResult = GetOcrResultOrDefault(image, analyzeAttributes);
+                var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageData, analyzeAttributes);
+                var ocrResult = GetOcrResultOrDefault(imageData, analyzeAttributes);
                 var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
 
                 foreach (var attributeContentProperty in analyzeAttributes)
                 {
-                    var propertyAccess = new PropertyAccess(image, attributeContentProperty.Content, attributeContentProperty.Property);
+                    var propertyAccess = new PropertyAccess(imageData, attributeContentProperty.Content, attributeContentProperty.Property);
                     attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, ocrResult, translationService);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // ignored
+                Log.Error($"Error analyzing image '{imageData.Name}' with content id '{imageData.ContentLink.ID}'", e);
             }
 
-            MarkAnalysisAsCompleted(image);
+            MarkAnalysisAsCompleted(imageData);
             return true;
         }
 
@@ -67,24 +65,36 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
             using (var stream = imageBlob.OpenRead())
             {
-                var image = System.Drawing.Image.FromStream(stream, false);
-
-                if (image.Width < 50 || image.Height < 50 || image.Width > 4200 || image.Height > 4200)
+                // Max file size: 4MB
+                if (stream.Length > 4 * 1024 * 1024)
                 {
-                    image.Dispose();
+                    Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
                     return false;
                 }
 
-                var path = ((FileBlob)imageBlob).FilePath;
-                var numBytes = new FileInfo(path).Length;
-
-                if (numBytes > 4 * 1024 * 1024)
+                // Image dimensions, min/max
+                try
                 {
+                    var image = System.Drawing.Image.FromStream(stream);
+                    if (image.Width < 50 || image.Height < 50)
+                    {
+                        image.Dispose();
+                        Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
+                        return false;
+                    }
+                    if (image.Width > 4200 || image.Height > 4200)
+                    {
+                        image.Dispose();
+                        Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
+                        return false;
+                    }
                     image.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Error validating image '{imageData.Name}' with content id '{imageData.ContentLink.ID}'", e);
                     return false;
                 }
-
-                image.Dispose();
             }
 
             return true;

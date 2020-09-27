@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <title>Gulla.Episerver.AutomaticImageDescription</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
@@ -11,7 +11,7 @@
     <copyright>Copyright 2020</copyright>	
     <repository type="git" url="https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription" branch="master" />
     <projectUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription</projectUrl>
-    <releaseNotes>Validate image dimensions, filesize and file extension before sending image to azure cognitive services.</releaseNotes>
+    <releaseNotes>Validate image dimensions, filesize and file extension before sending image to azure cognitive services. Now also for images stored in Azure.</releaseNotes>
 	<tags>episerver,azure,image,alt-text,description,ocr</tags>
 	<description>Count only images actually updated</description>
   <dependencies>
