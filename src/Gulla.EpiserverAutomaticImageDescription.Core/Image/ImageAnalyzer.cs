@@ -68,7 +68,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 // Max file size: 4MB
                 if (stream.Length > 4 * 1024 * 1024)
                 {
-                    Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
+                    Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
                     return false;
                 }
 
@@ -79,13 +79,13 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                     if (image.Width < 50 || image.Height < 50)
                     {
                         image.Dispose();
-                        Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
+                        Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
                         return false;
                     }
                     if (image.Width > 4200 || image.Height > 4200)
                     {
                         image.Dispose();
-                        Log.Debg($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
+                        Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
                         return false;
                     }
                     image.Dispose();
@@ -185,7 +185,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
         private static async Task<ImageAnalysis> AnalyzeImageFeatures(Stream image)
         {
-            var features = new List<VisualFeatureTypes>
+            var features = new List<VisualFeatureTypes?>
             {
                 VisualFeatureTypes.Adult,
                 VisualFeatureTypes.Brands,
@@ -198,7 +198,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 VisualFeatureTypes.Tags
             };
 
-            var details = new List<Details>
+            var details = new List<Details?>
             {
                 Details.Celebrities,
                 Details.Landmarks
