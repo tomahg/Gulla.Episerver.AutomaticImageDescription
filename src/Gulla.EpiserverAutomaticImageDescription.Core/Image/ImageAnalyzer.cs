@@ -140,7 +140,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 var attribute = contentProperty.Property.GetCustomAttributes(typeof(BaseImageDetailsAttribute)).Cast<BaseImageDetailsAttribute>().FirstOrDefault();
                 if (attribute != null)
                 {
-                    yield return new AttributeContentProperty()
+                    yield return new AttributeContentProperty
                     {
                         Attribute = attribute,
                         Content = contentProperty.Content,

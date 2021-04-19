@@ -2,16 +2,16 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription</id>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <title>Gulla.Episerver.AutomaticImageDescription</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Automatically populate properties based on image content.</summary>
-    <copyright>Copyright 2020</copyright>	
+    <copyright>Copyright 2021</copyright>	
     <repository type="git" url="https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription" branch="master" />
     <projectUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription</projectUrl>
-    <releaseNotes>Update Microsoft.Azure.CognitiveServices.Vision.ComputerVision</releaseNotes>
+    <releaseNotes></releaseNotes>
 	<tags>episerver,azure,image,alt-text,description,ocr,alternative text</tags>
 	<description>Automatically populate properties based on image content.</description>
   <dependencies>
