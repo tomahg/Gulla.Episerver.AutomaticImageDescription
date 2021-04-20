@@ -54,7 +54,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
             return task.Result.Select(x => x.Translations).SelectMany(x => x).Select(x => x.Text).ToList();
         }
 
-        private async Task<IEnumerable<TranslationResult>> TranslateTextRequest(string[] inputText, string toLanguage, string fromLanguage)
+        private static async Task<IEnumerable<TranslationResult>> TranslateTextRequest(IEnumerable<string> inputText, string toLanguage, string fromLanguage)
         {
             var route = $"/translate?api-version=3.0&to={toLanguage}" + (fromLanguage != null ? $"&from={fromLanguage}" : "");
             var content = inputText.Select(x => new TextForTranslation {Text = x}).ToArray();

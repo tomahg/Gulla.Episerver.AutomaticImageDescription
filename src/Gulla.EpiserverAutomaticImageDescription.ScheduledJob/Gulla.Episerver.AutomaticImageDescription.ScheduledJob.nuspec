@@ -2,22 +2,22 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</id>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <title>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>A scheduled job that automatically populate properties based on image content.</summary>
-    <copyright>Copyright 2020</copyright>	
+    <copyright>Copyright 2021</copyright>	
     <repository type="git" url="https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription" branch="master" />
     <projectUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription</projectUrl>
-    <releaseNotes></releaseNotes>
-	<tags>episerver,azure,image,alt-text,description,ocr</tags>
-	<description>A scheculed job that will update all existing images. Will use Azure Cognitive Services Vision API to analyze images uploaded to Episerver, and populate properties with data describing the images.</description>
-  <dependencies>
-    <dependency id="Gulla.Episerver.AutomaticImageDescription" version="[1.0.6, 2.0.0)" />
-      <dependency id="EPiServer.Framework" version="[11.1.0, 12.0.0)" />
-      <dependency id="EPiServer.CMS.Core" version="[11.1.0, 12.0.0)" />
-	</dependencies>	
+    <releaseNotes>Use Computer Vision API v3.2 with improved image tagging mode.</releaseNotes>
+	  <tags>episerver,azure,image,alt-text,description,ocr</tags>
+	  <description>A scheculed job that will update all existing images. Will use Azure Cognitive Services Vision API to analyze images uploaded to Episerver, and populate properties with data describing the images.</description>
+    <dependencies>
+      <dependency id="Gulla.Episerver.AutomaticImageDescription" version="[1.2.0, 2.0.0)" />
+        <dependency id="EPiServer.Framework" version="[11.1.0, 12.0.0)" />
+        <dependency id="EPiServer.CMS.Core" version="[11.1.0, 12.0.0)" />
+	  </dependencies>	
   </metadata>
 </package>

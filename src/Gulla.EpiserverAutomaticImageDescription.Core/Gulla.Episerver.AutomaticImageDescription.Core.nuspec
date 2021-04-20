@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Gulla.Episerver.AutomaticImageDescription</id>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <title>Gulla.Episerver.AutomaticImageDescription</title>
     <authors>Tomas Hensrud Gulla</authors>
     <owners>Tomas Hensrud Gulla</owners>
@@ -11,14 +11,14 @@
     <copyright>Copyright 2021</copyright>	
     <repository type="git" url="https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription" branch="master" />
     <projectUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription</projectUrl>
-    <releaseNotes></releaseNotes>
-	<tags>episerver,azure,image,alt-text,description,ocr,alternative text</tags>
-	<description>Automatically populate properties based on image content.</description>
-  <dependencies>
-	  <dependency id="EPiServer.Framework" version="[11.1.0, 12.0.0)" />
-	  <dependency id="EPiServer.CMS.AspNet" version="[11.1.0, 12.0.0)" />
-	  <dependency id="EPiServer.CMS.Core" version="[11.1.0, 12.0.0)" />
-	  <dependency id="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" version="[6.0.0, 7.0.0)" />
-	</dependencies>	
+    <releaseNotes>Use Computer Vision API v3.2 with improved image tagging mode.</releaseNotes>
+	  <tags>episerver,azure,image,alt-text,description,ocr,alternative text</tags>
+	  <description>Automatically populate properties based on image content.</description>
+    <dependencies>
+	    <dependency id="EPiServer.Framework" version="[11.1.0, 12.0.0)" />
+	    <dependency id="EPiServer.CMS.AspNet" version="[11.1.0, 12.0.0)" />
+	    <dependency id="EPiServer.CMS.Core" version="[11.1.0, 12.0.0)" />
+	    <dependency id="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" version="[7.0.0, 8.0.0)" />
+	  </dependencies>	
   </metadata>
 </package>
