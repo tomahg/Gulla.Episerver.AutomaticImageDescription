@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public abstract class BaseImageDetailsAttribute : Attribute
     {
         /// <summary>
@@ -51,6 +53,16 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         protected static bool IsStringProperty(PropertyInfo propertyInfo)
         {
             return propertyInfo.PropertyType == typeof(string);
+        }
+
+        protected static bool IsLocalizedStringProperty(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType == typeof(IList<PropertyDefinitions.LocalizedString>);
+        }
+
+        protected static bool IsLocalizedStringListProperty(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.PropertyType == typeof(IList<LocalizedStringList>);
         }
 
         protected static bool IsStringListProperty(PropertyInfo propertyInfo)

@@ -68,5 +68,7 @@
         public const string Vietnamese = "vi";
         public const string Welsh = "cy";
         public const string YucatecMaya = "yua";
+
+        public const string AllActive = "all";
     }
 }
