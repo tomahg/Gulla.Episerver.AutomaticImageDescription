@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Constants;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
@@ -7,7 +9,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
-    /// Analyze image for faces. Apply to string or IList&lt;string&gt; properties.
+    /// Analyze image for faces. Apply to bool, int, string, IList&lt;string&gt;, LocalizedString or LocalizedStringList properties.
     /// </summary>
     public class AnalyzeImageForFacesAttribute : BaseImageDetailsAttribute
     {
@@ -22,7 +24,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         private readonly bool _genderValuesSpecified;
 
         /// <summary>
-        /// Analyze image for faces. Use generic names for gender. Apply to string or IList&lt;string&gt; properties.
+        /// Analyze image for faces. Use generic names for gender. Apply to bool, int, string, IList&lt;string&gt;, LocalizedString or LocalizedStringList properties.
         /// </summary>
         /// <param name="languageCode">Translate tags to specified language.</param>
         public AnalyzeImageForFacesAttribute(string languageCode = null)
@@ -31,7 +33,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         }
 
         /// <summary>
-        /// Analyze image for faces. Supply your own names for gender, child and adult, and cutoff age. Apply to string or IList&lt;string&gt; properties.
+        /// Analyze image for faces. Supply your own names for gender, child and adult, and cutoff age. Apply to bool, int, string, IList&lt;string&gt;, LocalizedString or LocalizedStringList properties.
         /// </summary>
         /// <param name="maleAdultString"></param>
         /// <param name="femaleAdultString"></param>
@@ -60,31 +62,68 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         {
             if (imageAnalyzerResult.Faces == null || imageAnalyzerResult.Faces.Count == 0)
             {
+                if (IsBooleanProperty(propertyAccess.Property))
+                {
+                    propertyAccess.SetValue(false);
+                }
+                else if (IsIntProperty(propertyAccess.Property))
+                {
+                    propertyAccess.SetValue(0);
+                }
                 return;
             }
 
-            IEnumerable<string> faces;
-
-            if (_genderValuesSpecified)
+            if (IsBooleanProperty(propertyAccess.Property))
             {
-                faces = GetFacesWithSpecifiedValued(imageAnalyzerResult.Faces);
+                propertyAccess.SetValue(imageAnalyzerResult.Faces.Any());
             }
-            else
+            else if (IsIntProperty(propertyAccess.Property))
             {
-                faces = imageAnalyzerResult.Faces.Select(x => $"{GetTranslatedGender(x.Gender, translationService)} ({x.Age})");
+                propertyAccess.SetValue(imageAnalyzerResult.Faces.Count);
             }
-
-            if (IsStringProperty(propertyAccess.Property))
+            else if (IsStringProperty(propertyAccess.Property))
             {
-                propertyAccess.SetValue(string.Join(", ", faces));
+                propertyAccess.SetValue(string.Join(", ", GetTranslatedStrings(imageAnalyzerResult.Faces, translationService)));
             }
             else if (IsStringListProperty(propertyAccess.Property))
             {
-                propertyAccess.SetValue(faces.ToList());
+                propertyAccess.SetValue(GetTranslatedStrings(imageAnalyzerResult.Faces, translationService).ToList());
+            }
+            else if (IsLocalizedStringProperty(propertyAccess.Property))
+            {
+                propertyAccess.SetValue(GetTranslatedLocalizedStrings(GetStrings(imageAnalyzerResult.Faces).ToList(), GetLanguageCodes(), translationService));
+            }
+            else if (IsLocalizedStringListProperty(propertyAccess.Property))
+            {
+                propertyAccess.SetValue(GetTranslatedLocalizedStringLists(GetStrings(imageAnalyzerResult.Faces).ToList(), GetLanguageCodes(), translationService));
             }
         }
 
-        private IEnumerable<string> GetFacesWithSpecifiedValued(IList<FaceDescription> faces)
+        private IEnumerable<string> GetStrings(IEnumerable<FaceDescription> faces)
+        {
+            return _genderValuesSpecified ? GetFacesWithSpecifiedValues(faces) : faces.Select(x => $"{GetGenderString(x.Gender)} ({x.Age})");
+        }
+
+        private IEnumerable<string> GetTranslatedStrings(IEnumerable<FaceDescription> faces, TranslationService translationService)
+        {
+            return _genderValuesSpecified ? GetFacesWithSpecifiedValues(faces) : faces.Select(x => $"{GetTranslatedGender(x.Gender, _languageCode, translationService)} ({x.Age})");
+        }
+
+        private static IEnumerable<string> GetTranslatedStrings(IEnumerable<string> faces, string toLanguage, TranslationService translationService)
+        {
+            var faceList = faces.ToList();
+            var translatedFaces =  translationService.TranslateText(faceList, toLanguage, TranslationLanguage.English).Select(x => x.ToLower());
+            
+            // When gender values are specified, match the case when translating
+            if (char.IsUpper(faceList.First()[0]))
+            {
+                return translatedFaces.Select(x => x[0].ToString().ToUpper() + (x.Length > 1 ? x.Substring(1) : ""));
+            }
+
+            return translatedFaces;
+        }
+
+        private IEnumerable<string> GetFacesWithSpecifiedValues(IEnumerable<FaceDescription> faces)
         {
             foreach (var faceDescription in faces)
             {
@@ -99,16 +138,62 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private string GetTranslatedGender(Gender? genderEnum, TranslationService translationService)
+        private static string GetGenderString(Gender? genderEnum)
+        {
+            return (genderEnum.HasValue ? (genderEnum == Gender.Male ? Gender.Male.ToString() : Gender.Female.ToString()) : "Person").ToLower();
+        }
+
+        private static string GetTranslatedGender(Gender? genderEnum, string languageCode, TranslationService translationService)
         {
             var gender = (genderEnum.HasValue ? (genderEnum == Gender.Male ? Gender.Male.ToString() : Gender.Female.ToString()) : "Person");
 
-            if (_languageCode != null)
+            if (languageCode != null && languageCode != TranslationLanguage.English)
             {
-                gender = translationService.TranslateText(new[] {gender}, _languageCode, TranslationLanguage.English).First();
+                gender = translationService.TranslateText(new[] {gender}, languageCode, TranslationLanguage.English).First().ToLower();
             }
 
-            return gender;
+            return gender.ToLower();
+        }
+
+        private static IEnumerable<LocalizedString> GetTranslatedLocalizedStrings(IList<string> faces, IEnumerable<string> languageCodes, TranslationService translationService)
+        {
+            return languageCodes.Select(languageCode => GetTranslatedLocalizedString(faces, languageCode, translationService)).ToList();
+        }
+
+        private static LocalizedString GetTranslatedLocalizedString(IEnumerable<string> faces, string languageCode, TranslationService translationService)
+        {
+            if (languageCode == TranslationLanguage.English)
+            {
+                return new LocalizedString { Language = TranslationLanguage.English, Value = string.Join(", ", faces) };
+            }
+
+            return new LocalizedString { Language = languageCode, Value = string.Join(", ", GetTranslatedStrings(faces, languageCode, translationService)) };
+        }
+
+        private static IEnumerable<LocalizedStringList> GetTranslatedLocalizedStringLists(IList<string> faces, IEnumerable<string> languageCodes, TranslationService translationService)
+        {
+            return languageCodes.Select(languageCode => GetTranslatedLocalizedStringList(faces, languageCode, translationService)).ToList();
+        }
+
+        private static LocalizedStringList GetTranslatedLocalizedStringList(IList<string> faces, string languageCode, TranslationService translationService)
+        {
+            if (languageCode == TranslationLanguage.English)
+            {
+                return new LocalizedStringList { Language = TranslationLanguage.English, Value = faces };
+            }
+
+            return new LocalizedStringList { Language = languageCode, Value = GetTranslatedStrings(faces, languageCode, translationService).ToList() };
+        }
+
+        private IEnumerable<string> GetLanguageCodes()
+        {
+            var languageCodes = _languageCode?.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (_languageCode == TranslationLanguage.AllActive || languageCodes?.Any() != true)
+            {
+                languageCodes = new LanguageSelectionFactory().GetSelections(null).Select(x => x.Value as string).ToList();
+            }
+
+            return languageCodes;
         }
     }
 }
