@@ -10,6 +10,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 {
     /// <summary>
     /// Analyze image for faces. Apply to bool, int, string, IList&lt;string&gt;, LocalizedString or LocalizedStringList properties.
+    /// For LocalizedString or LocalizedStringList, TranslationLanguage.AllActive or comma-separated list of language ids can be used.
     /// </summary>
     public class AnalyzeImageForFacesAttribute : BaseImageDetailsAttribute
     {
@@ -42,7 +43,8 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         /// <param name="femaleChildString"></param>
         /// <param name="otherChildString"></param>
         /// <param name="childTurnsAdultAtAge"></param>
-        public AnalyzeImageForFacesAttribute(string maleAdultString, string femaleAdultString, string otherAdultString, string maleChildString, string femaleChildString, string otherChildString, int childTurnsAdultAtAge)
+        /// <param name="languageCode"></param>
+        public AnalyzeImageForFacesAttribute(string maleAdultString, string femaleAdultString, string otherAdultString, string maleChildString, string femaleChildString, string otherChildString, int childTurnsAdultAtAge, string languageCode = null)
         {
             _genderValuesSpecified = true;
             _maleAdultString = maleAdultString;
@@ -52,6 +54,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
             _femaleChildString = femaleChildString;
             _otherChildString = otherChildString;
             _childTurnsAdultAtAge = childTurnsAdultAtAge;
+            _languageCode = languageCode;
         }
 
         public override bool AnalyzeImageContent => true;
@@ -188,9 +191,14 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         private IEnumerable<string> GetLanguageCodes()
         {
             var languageCodes = _languageCode?.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (_languageCode == TranslationLanguage.AllActive || languageCodes?.Any() != true)
+            if (_languageCode == TranslationLanguage.AllActive)
             {
-                languageCodes = new LanguageSelectionFactory().GetSelections(null).Select(x => x.Value as string).ToList();
+                return new LanguageSelectionFactory().GetSelections(null).Select(x => x.Value as string).ToList();
+            }
+
+            if (languageCodes?.Any() != true)
+            {
+                return new List<string>() { TranslationLanguage.English };
             }
 
             return languageCodes;
