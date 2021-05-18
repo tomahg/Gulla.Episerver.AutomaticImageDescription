@@ -57,7 +57,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 
         protected static bool IsLocalizedStringProperty(PropertyInfo propertyInfo)
         {
-            return propertyInfo.PropertyType == typeof(IList<PropertyDefinitions.LocalizedString>);
+            return propertyInfo.PropertyType == typeof(IList<LocalizedString>);
         }
 
         protected static bool IsLocalizedStringListProperty(PropertyInfo propertyInfo)
