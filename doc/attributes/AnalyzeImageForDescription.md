@@ -4,7 +4,7 @@ This attribute will [describe the image](https://docs.microsoft.com/en-us/azure/
 May be added to the following property types:
 
 - String: A description of the image.
-- IList&lt;LocalizedString&gt; : A description of the image in one or more languages.
+- IList&lt;LocalizedString&gt;: A description of the image in one or more languages.
 
 **Example**
 ``` C#
