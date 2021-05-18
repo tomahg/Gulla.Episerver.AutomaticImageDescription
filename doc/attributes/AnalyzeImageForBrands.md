@@ -4,7 +4,7 @@ This attribute will try to identify brands in the image. [Brand detection](https
 May be added to the following property types:
 
 - String: A comma separated list of brands.
-- IList<string>: A list of brands.
+- IList&lt;string&gt;: A list of brands.
 
 **Example**
 ``` C#

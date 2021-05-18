@@ -4,7 +4,7 @@ This attribute will try to identify and name [celebrities](https://docs.microsof
 May be added to the following property types:
 
 - String: A comma separated list of celebrities.
-- IList<string>: A list of celebrities.
+- IList&lt;string&gt;: A list of celebrities.
 
 **Example**
 ``` C#
