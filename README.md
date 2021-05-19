@@ -16,7 +16,7 @@ If you want to use the translation capabilities, also create an Azure Cognitive 
  If you will be using English-only metadata, you do not need the Translator Text-resource. 
 
 ## More information
-Check out [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
+Check [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
 
 ## Get it
 Grab it from this repository or install the nuget available on the [Episerver NuGet feed](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
