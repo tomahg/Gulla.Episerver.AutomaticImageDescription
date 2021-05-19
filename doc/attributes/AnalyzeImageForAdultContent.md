@@ -3,9 +3,9 @@ This attribute will try to identify adult content. [Adult images](https://docs.m
 
 May be added to the following property types:
 
-- Bool: True/false indicating if the image has adult content.
-- Double: A value ranging from 0.0 to 1.0 indicating Adult Score.
-- String: A value ranging from 0.0 to 1.0 indicating Adult Score.
+- **Bool:** True/false indicating if the image has adult content.
+- **Double:** A value ranging from 0.0 to 1.0 indicating Adult Score.
+- **String:** A value ranging from 0.0 to 1.0 indicating Adult Score.
 
 **Example**
 ``` C#
