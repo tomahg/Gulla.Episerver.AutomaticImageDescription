@@ -1,0 +1,16 @@
+# Attributes
+
+In order to generate metadata, you decorate properties on your image model with various attributes. Different types of metadata, requires different attributes.
+
+- [Adult content](./attributes/AnalyzeImageForAdultContent.md)
+- [Brands](./attributes/AnalyzeImageForBrands.md)
+- [Celebrities](./attributes/AnalyzeImageForCelebrities.md)
+- [Description, suitable for alt-text](./attributes/AnalyzeImageForDescription.md)
+- [Faces](./attributes/AnalyzeImageForFaces.md)
+- [Gory content](./attributes/AnalyzeImageForGoryContent.md)
+- [Landmarks](./attributes/AnalyzeImageForLandmarks.md)
+- [OCR](./attributes/AnalyzeImageForOcr.md)
+- [Racy content](./attributes/AnalyzeImageForRacyContent.md)
+- [Tags](./attributes/AnalyzeImageForTags.md)
+
+If none of these attributes suits your needs, you may [create your own attribute](./attributes/CustomAttribute.md).
