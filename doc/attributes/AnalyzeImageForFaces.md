@@ -53,4 +53,4 @@ public class FaceBlock : BlockData
     public virtual IList<LocalizedStringList> LocalizedStringList { get; set; }
 }
 ```
-![Brands](./img/Faces.jpg)
+![Faces](./img/Faces.jpg)

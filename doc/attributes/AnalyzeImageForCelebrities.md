@@ -17,4 +17,4 @@ public class CelebrityBlock : BlockData
     public virtual IList<string> CelebrityStringList { get; set; }
 }
 ```
-![Brands](./img/Celebrities.jpg)
+![Celebrities](./img/Celebrities.jpg)

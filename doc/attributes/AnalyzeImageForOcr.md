@@ -20,4 +20,4 @@ public class OcrBlock : BlockData
     public virtual string NorwegianString { get; set; }
 }
 ```
-![Brands](./img/Ocr.jpg)
+![Ocr](./img/Ocr.jpg)

@@ -17,4 +17,4 @@ public class LandmarkBlock : BlockData
     public virtual IList<string> StringList { get; set; }
 }
 ```
-![Brands](./img/Landmarks.jpg)
+![Landmarks](./img/Landmarks.jpg)

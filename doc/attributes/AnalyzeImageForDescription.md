@@ -32,4 +32,4 @@ public class DescriptionBlock : BlockData
     public virtual IList<LocalizedString> SelectedLanguages { get; set; }
 }
 ```
-![Brands](./img/Description.jpg)
+![Description](./img/Description.jpg)
