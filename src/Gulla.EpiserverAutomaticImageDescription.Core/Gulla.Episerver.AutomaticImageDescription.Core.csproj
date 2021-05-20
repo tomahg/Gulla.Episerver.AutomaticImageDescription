@@ -176,6 +176,7 @@
     <Compile Include="Image\Attributes\AnalyzeImageForLandmarksAttribute.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForCelebrities.cs" />
     <Compile Include="Image\Attributes\AnalyzeImageForFacesAttribute.cs" />
+    <Compile Include="Image\Attributes\AnalyzeImageForGoryContentAttribute.cs" />
     <Compile Include="Image\Interface\IAnalyzableImage.cs" />
     <Compile Include="Image\Models\AttributeContentProperty.cs" />
     <Compile Include="Image\Models\ContentProperty.cs" />
