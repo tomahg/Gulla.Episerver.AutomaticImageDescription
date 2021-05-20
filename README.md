@@ -15,16 +15,15 @@ Visit the [Getting Started section](doc/GettingStarted.md) to learn how to insta
 Visit the [Generating Metadata section](doc/GeneratingMetadata.md) to learn all about how to generate metadata when images are uploaded.
 
 ## Generate metadata for your existing images
-If your not starting from scratch you are likely to have a bunch of images prevously uploaded to the CMS.
+If your not starting from scratch you are likely to have a bunch of images prevously uploaded to the CMS.  
 Visit the [Scheduled job section](doc/ScheduledJob.md) to learn how you can populate metadat for your existing images.
 
 ## Use the attributes
-The key to generating metadata, is adding the correct attribute.
-
+The key to generating metadata, is adding the correct attribute.  
 Visit the [Attributes section](doc/Attributes.md) to learn about the different attributes, and how they are used.
 
 ## Localization
-If your site have more than one language, you probably want metadata in more than one language too. This can be handled in a couple of different ways.
+If your site have more than one language, you probably want metadata in more than one language too. This can be handled in a couple of different ways.  
 Visit the [Localization section](doc/Localization.md) to learn more.
 
 ## More information
