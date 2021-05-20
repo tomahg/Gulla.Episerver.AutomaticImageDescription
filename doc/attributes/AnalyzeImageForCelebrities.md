@@ -18,3 +18,4 @@ public class CelebrityBlock : BlockData
 }
 ```
 ![Celebrities](./img/Celebrities.jpg)
+[<< Back to list of attributes](../Attributes.md)

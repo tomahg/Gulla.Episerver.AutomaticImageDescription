@@ -22,3 +22,4 @@ public class GoryBlock : BlockData
 }
 ```
 ![Gory](./img/Gory.jpg)
+[<< Back to list of attributes](../Attributes.md)

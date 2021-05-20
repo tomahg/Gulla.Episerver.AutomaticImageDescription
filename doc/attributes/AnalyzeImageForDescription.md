@@ -7,7 +7,7 @@ May be added to the following property types:
 - **IList&lt;LocalizedString&gt;:** A description of the image in one or more languages.
 
 **Parameters**
-- **languageCode:** Passing a parameter from the TranslationLanguage-class, you may choose between about [60 different languages](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support). Optional. English is default. Combined with `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site.
+- **languageCode:** Passing a parameter from the TranslationLanguage-class, you may choose between about [60 different languages](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support). Optional. English is default. Combined with `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site, or provide a comma separated list of language codes.
 - **upperCaseFirstLetter:** If the description should start with an uppercase character. True is default.
 - **endWithDot:** If the description should end with a dot. True is default.
 
@@ -38,3 +38,5 @@ public class DescriptionBlock : BlockData
 }
 ```
 ![Description](./img/Description.jpg)
+
+[<< Back to list of attributes](../Attributes.md)

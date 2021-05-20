@@ -9,7 +9,7 @@ May be added to the following property types:
 - **IList&lt;LocalizedStringList&gt;:** A list of tags, in one or more languages.
 
 **Parameters**
-- **languageCode:** Passing a parameter from the TranslationLanguage-class, you may choose between about [60 different languages](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support). Optional. English is default. Combined with `IList<LocalizedString>` or `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site.
+- **languageCode:** Passing a parameter from the TranslationLanguage-class, you may choose between about [60 different languages](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support). Optional. English is default. Combined with `IList<LocalizedString>` or `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site, or provide a comma separated list of language codes.
 
 
 **Example**
@@ -33,3 +33,4 @@ public class TagBlock : BlockData
 }
 ```
 ![Tags](./img/Tags.jpg)
+[<< Back to list of attributes](../Attributes.md)

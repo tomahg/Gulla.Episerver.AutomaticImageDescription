@@ -1,22 +1,35 @@
 # Gulla.Episerver.AutomaticImageDescription
 
-## Automatic metadata for images in Episerver
-Will use Microsoft Azure Cognitive Services, Computer Vision API in combination with Translator Text API, to generate various metadata for images.
+## Automatic metadata for images in Episerver/Optimizely
+This addon will use Microsoft Azure Cognitive Services, Computer Vision API in combination with Translator Text API, to generate various metadata for images uploaded in Episerver/Optimizely CMS.
 
+How you use the metadata on your site is completely up to you. Some suggestions:
+- Alt text for images, either directly or as a suggestion for editors to concider and adapt.
+- Searchable metadata makes it easier to find the image you are looking for in Episerver edit mode.
+- Use metadata to dynamically select what images to show in specific locations.
 
-## Prerequisites
-* Create an Azure Cognitive Services, Computer Vision-resource using the Azure portal.
-* Add the following keys to appsettings section in web.config. Get the values from the Azure portal.  
-  - Gulla.Episerver.AutomaticImageDescription:ComputerVision.SubscriptionKey
-  - Gulla.Episerver.AutomaticImageDescription:ComputerVision.Endpoint
+## Getting started
+Visit the [Getting Started section](GettingStarted.md) to learn how to install and configure the addon.
 
-If you want to use the translation capabilities, also create an Azure Cognitive Services, Translator Text-resource using the Azure portal. Add the following key to appsettings section in web.config. Get the value from the Azure portal.  
-  - Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionKey
+## Generating metadata when images are uploaded
+In order to generate metadata when images are uloaded, you need to add an attribute to each property you want populated with metadata.
+Visit the [Attributes section](Attributes.md) to learn all about the different attributes, and how to use them.
 
- If you will be using English-only metadata, you do not need the Translator Text-resource. 
+## Generate metadata for your existing images
+If your not starting from scratch you are likely to have a bunch of images prevously uploaded to the CMS.
+Visit the [Scheduled job section](ScheduledJob.md) to learn how you can populate metadat for your existing images.
+
+## Localization
+If your site have more than one language, you probably want metadata in more than one language too. This can be handled in a couple of different ways.
+Visit the [Localization section](Localization.md) to learn more.
 
 ## More information
 Check [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
 
-## Get it
-Grab it from this repository or install the nuget available on the [Episerver NuGet feed](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
+## TL;DR
+- Add the [NuGet package](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
+- Create an Azure resource
+- Add the key to config
+- Add an attribute, like `[AnalyzeImageForDescription]`, to a property on your image model.
+- Upload an image
+- Enjoy your metadata

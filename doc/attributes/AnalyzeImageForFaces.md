@@ -11,7 +11,7 @@ May be added to the following property types:
 - **IList&lt;LocalizedStringList&gt;:** A list of gender/age pairs, in one or more languages.
 
 **Parameters**
-- **languageCode:** per default, the face description will be in the format «Male (40)». Passing a parameter from the TranslationLanguage-class, you may choose between about 60 different languages. Optional. English is default. Combined with `IList<LocalizedString>` or `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site.
+- **languageCode:** per default, the face description will be in the format «Male (40)». Passing a parameter from the TranslationLanguage-class, you may choose between about 60 different languages. Optional. English is default. Combined with `IList<LocalizedString>` or `IList<LocalizedString>` you can use the language code `TranslationLanguage.AllActive` to get translations for all active languages in your Episerver site, or provide a comma separated list of language codes.
 
 **Alternative parameters**
 Male/female are not always the preferred word, or the default translations to your language may not be the best. Maybe children should be differentiated from adults. Use the alternative constructor!
@@ -54,3 +54,4 @@ public class FaceBlock : BlockData
 }
 ```
 ![Faces](./img/Faces.jpg)
+[<< Back to list of attributes](../Attributes.md)

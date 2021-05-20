@@ -21,3 +21,4 @@ public class OcrBlock : BlockData
 }
 ```
 ![Ocr](./img/Ocr.jpg)
+[<< Back to list of attributes](../Attributes.md)
