@@ -9,19 +9,18 @@ How you use the metadata on your site is completely up to you. Some suggestions:
 - Use metadata to dynamically select what images to show in specific locations.
 
 ## Getting started
-Visit the [Getting Started section](GettingStarted.md) to learn how to install and configure the addon.
+Visit the [Getting Started section](doc/GettingStarted.md) to learn how to install and configure the addon.
 
 ## Generating metadata when images are uploaded
-In order to generate metadata when images are uloaded, you need to add an attribute to each property you want populated with metadata.
-Visit the [Attributes section](Attributes.md) to learn all about the different attributes, and how to use them.
+Visit the [Generating Metadata section](doc/GeneratingMetadata.md) to learn all about how to generate metadata when images are uploaded.
 
 ## Generate metadata for your existing images
 If your not starting from scratch you are likely to have a bunch of images prevously uploaded to the CMS.
-Visit the [Scheduled job section](ScheduledJob.md) to learn how you can populate metadat for your existing images.
+Visit the [Scheduled job section](doc/ScheduledJob.md) to learn how you can populate metadat for your existing images.
 
 ## Localization
 If your site have more than one language, you probably want metadata in more than one language too. This can be handled in a couple of different ways.
-Visit the [Localization section](Localization.md) to learn more.
+Visit the [Localization section](doc/Localization.md) to learn more.
 
 ## More information
 Check [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).

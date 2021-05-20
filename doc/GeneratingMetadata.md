@@ -42,17 +42,20 @@ namespace Alloy.Models.Media
 
 You may also add your attributes and properties to a block type definition:
 ``` C#
-[ContentType]
-public class DescriptionBlock : BlockData
+namespace Alloy.Models.Blocks
 {
-    [AnalyzeImageForDescription]
-    public virtual string English { get; set; }
+  [ContentType(AvailableInEditMode = false)]
+  public class DescriptionBlock : BlockData
+  {
+      [AnalyzeImageForDescription]
+      public virtual string English { get; set; }
 
-    [AnalyzeImageForDescription(TranslationLanguage.Norwegian)]
-    public virtual string Norwegian { get; set; }
+      [AnalyzeImageForDescription(TranslationLanguage.Norwegian)]
+      public virtual string Norwegian { get; set; }
 
-    [AnalyzeImageForDescription(TranslationLanguage.Spanish)]
-    public virtual string Spanish { get; set; }
+      [AnalyzeImageForDescription(TranslationLanguage.Spanish)]
+      public virtual string Spanish { get; set; }
+  }
 }
 ```
 
@@ -143,3 +146,5 @@ Each row will contain a list of faces.
 
 And the dropdowd will contain all languages activated for your site.
 ![LocalizedStringList](img/LocalizedStringList3.jpg)
+
+[<< Back to readme](../README.md)
