@@ -28,11 +28,3 @@ Visit the [Localization section](doc/Localization.md) to learn more.
 
 ## More information
 Check [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
-
-## TL;DR
-- Add the [NuGet package](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription).
-- Create an Azure resource
-- Add the key to config
-- Add an attribute, like `[AnalyzeImageForDescription]`, to a property on your image model.
-- Upload an image
-- Enjoy your metadata
