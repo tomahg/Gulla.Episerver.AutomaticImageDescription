@@ -6,7 +6,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions
 {
     public static class LocalizedStringExtensions
     {
-        public static string GetPreferredCulture(this IList<PropertyDefinitions.LocalizedString> localizedStrings)
+        public static string GetPreferredCulture(this IList<LocalizedString> localizedStrings)
         {
             if (localizedStrings == null || localizedStrings.Count == 0)
             {
@@ -15,7 +15,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions
             return localizedStrings.FirstOrDefault(x => x.Language == ContentLanguage.PreferredCulture.Name)?.Value;
         }
 
-        public static string GetPreferredCulture(this IList<PropertyDefinitions.LocalizedString> localizedStrings, string fallbackLanguage)
+        public static string GetPreferredCulture(this IList<LocalizedString> localizedStrings, string fallbackLanguage)
         {
             var valueInPreferredLanguage = localizedStrings.GetPreferredCulture();
             return !string.IsNullOrEmpty(valueInPreferredLanguage) ? valueInPreferredLanguage : localizedStrings.FirstOrDefault(x => x.Language == fallbackLanguage)?.Value;
