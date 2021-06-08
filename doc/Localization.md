@@ -17,10 +17,13 @@ Use the property `IList<LocalizedString>` when you want the same string in diffe
 **Example**
 ``` C#
 [AnalyzeImageForDescription(TranslationLanguage.AllActive)]
-public virtual IList<LocalizedString> AllActiveLanguages { get; set; }
+public virtual IList<LocalizedString> Description { get; set; }
 ```
 
-When manually editing the values, you can choose between all active languages in your site.
+![Description](img/Description.jpg)
+
+![Description, expanded](img/DescriptionExpanded.jpg)
+
 
 ### List of localized strings
 Use the property `IList<LocalizedString>` when you want the same list of strings in different languages.
@@ -28,16 +31,22 @@ Use the property `IList<LocalizedString>` when you want the same list of strings
 **Example**
 ``` C#
 [AnalyzeImageForTags(TranslationLanguage.AllActive)]
-public virtual IList<LocalizedStringList> LocalizedStringList { get; set; }
+public virtual IList<LocalizedStringList> Tags { get; set; }
 ```
+![Tags](img/Tags.jpg)
 
+![Tags, expanded](img/TagsExpanded.jpg)
+
+
+## Translations
+When passing the special parameter `TranslationLanguage.AllActive` the value will be translated to all active languages in your site. You can also specify a single language, or more than one language separated by comma.
 When manually editing the values, you can choose between all active languages in your site.
 
-[<< Back to readme](../README.md)
-
-## Get the correct language
+## Get the correct translation
 You can write your own code to get the correct string, or list of strings, based on your own logic. I would recommnend using `ContentLanguage.PreferredCulture` and perhaps fallback to one specific langauge. Or you can use any of the included `LocalizedStringExtensions`-methods.
 - `GetPreferredCulture(this IList<LocalizedString> localizedStrings)`
 - `GetPreferredCulture(this IList<LocalizedString> localizedStrings, string fallbackLanguage)`
 - `GetPreferredCulture(this IList<LocalizedStringList> localizedStrings)`
 - `GetPreferredCulture(this IList<LocalizedStringList> localizedStrings, string fallbackLanguage)`
+
+[<< Back to readme](../README.md)
