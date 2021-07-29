@@ -14,6 +14,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
     public class TranslationService
     {
         private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionKey"];
+        private static readonly string TranslatorSubscriptionRegion = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionRegion"];
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
         private readonly TranslationCache _cache;
 
@@ -68,6 +69,11 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
                 request.RequestUri = new Uri(TranslatorEndpoint + route);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", TranslatorSubscriptionKey);
+
+                if (!string.IsNullOrEmpty(TranslatorSubscriptionRegion))
+                {
+                    request.Headers.Add("Ocp-Apim-Subscription-Region", TranslatorSubscriptionRegion);
+                }
 
                 var response = await client.SendAsync(request).ConfigureAwait(false);
                 var result = await response.Content.ReadAsStringAsync();
