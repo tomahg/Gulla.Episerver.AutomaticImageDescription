@@ -39,7 +39,16 @@ After the resource is created, locate «Keys and Endpoint» in the left pane and
 
 ```
 
+## 5. Add Translator Region to config (optional)
+Add your location, also known as region. The default is global. This is required if using a Cognitive Services resource.
+``` XML
+<appSettings>
+    <add key="Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionRegion" value="YOUR_RESOURCE_LOCATION" />
+</appSettings>
+
+```
+
 Now, you are ready to generate metadata!
-The next step is to add some [Attributes](Attributes.md) to your image model!
+The next step is to add some [Attributes](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/quickstart-translator?tabs=csharp) to your image model!
 
 [<< Back to readme](../README.md)
