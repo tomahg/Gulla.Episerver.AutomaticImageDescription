@@ -2,12 +2,25 @@
 
 When adding attributes to properties, those properties are populated with metadata when the image is uploaded. So what about images that were uploaded before you started using this module?
 
-You may add the NuGet package [Gulla.Episerver.AutomaticImageDescription.ScheduledJob](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription.ScheduledJob) that (surprise!) will give you a scheduled job that can generate metadata, based on the attributes, for your existing images. When the job is done, simply remove the NuGet package, to get rid of the job from admin mode.
+You may add the NuGet package [Gulla.Episerver.AutomaticImageDescription.ScheduledJob](https://nuget.optimizely.com/package/?id=Gulla.Episerver.AutomaticImageDescription.ScheduledJob) that (surprise!) will give you a scheduled job that can generate metadata, based on the attributes, for your existing images. When the job is done, simply remove the NuGet package, to get rid of the job from admin mode.
 
-Per default, the job will only send 20 requests to the Computer Vision API, so it's possible to [stay inside the free tier](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/computer-vision/). To adjust the throttling, add the following line to the appSettings-region of your web.config.
+Per default, the job will only send 20 requests to the Computer Vision API, so it's possible to [stay inside the free tier](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/computer-vision/). To adjust the throttling, add the following line to the `AutomaticImageDescription`region of your `appsettings.json`.
 
-``` XML
-<add key="Gulla.Episerver.AutomaticImageDescription:ScheduledJob.MaxRequestsPerMinute" value="20" />
+```JSON
+"Gulla": {
+  "AutomaticImageDescription": {
+    "ScheduledJobMaxRequestsPerMinute": 20
+  }
+}
+```
+
+Of in `startup.cs` if you prefer that.
+
+```CSHARP
+.AddAutomaticImageDescription(x =>
+{
+    x.ScheduledJobMaxRequestsPerMinute = 20;
+})
 ```
 
 20 is default, add value="0" to get maximum throughput.
