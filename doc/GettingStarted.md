@@ -1,11 +1,11 @@
 # Gulla.Episerver.AutomaticImageDescription
 
 ## 1. Install the addon
-The [NuGet package](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription) is available on https://nuget.optimizely.com/
+The [NuGet package](https://nuget.episerver.com/package/?id=Gulla.Episerver.AutomaticImageDescription) is available at https://nuget.optimizely.com/
 
 ## 2. Configuration
 For AutomaticImageDescription to work, you will have to call the `.AddAutomaticImageDescription()` extension method in the Startup.ConfigureServices method.
-You may pass configuration to the `.AddAutomaticImageDescription()` method or use `appsettings.json` instad. A configuration setting specified in appsettings.json will override any configuration configured in Startup.cs.
+You may pass configuration to the `.AddAutomaticImageDescription()` method or use `appsettings.json` instead. A configuration setting specified in appsettings.json will override any configuration configured in Startup.cs.
 
 ## 3. Create a Computer Vision resource
 In the Azure portal, create a new resource. Search for «Computer Vision», select pricing tier and create.
