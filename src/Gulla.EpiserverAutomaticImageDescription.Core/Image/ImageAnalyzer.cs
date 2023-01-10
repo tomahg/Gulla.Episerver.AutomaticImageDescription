@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Web.Configuration;
 using EPiServer.Core;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Models;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Microsoft.Extensions.Options;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 {
     public static class ImageAnalyzer
     {
-        private static readonly string ComputerVisionApiSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.SubscriptionKey"];
-        private static readonly string ComputerVisionEndpoint = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ComputerVision.Endpoint"];
+        private static IOptions<AutomaticImageDescriptionOptions> _configuration;
+        private static IOptions<AutomaticImageDescriptionOptions> Configuration => _configuration ??= ServiceLocator.Current.GetInstance<IOptions<AutomaticImageDescriptionOptions>>();
+
+        private static readonly string ComputerVisionApiSubscriptionKey = Configuration.Value.ComputerVisionSubscriptionKey;
+        private static readonly string ComputerVisionEndpoint = Configuration.Value.ComputerVisionEndpoint;
         private static readonly ILogger Log = LogManager.GetLogger();
 
         private static ComputerVisionClient _client;
@@ -63,38 +66,36 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
         {
             var imageBlob = imageData.BinaryData;
 
-            using (var stream = imageBlob.OpenRead())
+            using var stream = imageBlob.OpenRead();
+            // Max file size: 4MB
+            if (stream.Length > 4 * 1024 * 1024)
             {
-                // Max file size: 4MB
-                if (stream.Length > 4 * 1024 * 1024)
-                {
-                    Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
-                    return false;
-                }
+                Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
+                return false;
+            }
 
-                // Image dimensions, min/max
-                try
+            // Image dimensions, min/max
+            try
+            {
+                var image = System.Drawing.Image.FromStream(stream);
+                if (image.Width < 50 || image.Height < 50)
                 {
-                    var image = System.Drawing.Image.FromStream(stream);
-                    if (image.Width < 50 || image.Height < 50)
-                    {
-                        image.Dispose();
-                        Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
-                        return false;
-                    }
-                    if (image.Width > 4200 || image.Height > 4200)
-                    {
-                        image.Dispose();
-                        Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
-                        return false;
-                    }
                     image.Dispose();
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Error validating image '{imageData.Name}' with content id '{imageData.ContentLink.ID}'", e);
+                    Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
                     return false;
                 }
+                if (image.Width > 4200 || image.Height > 4200)
+                {
+                    image.Dispose();
+                    Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
+                    return false;
+                }
+                image.Dispose();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error validating image '{imageData.Name}' with content id '{imageData.ContentLink.ID}'", e);
+                return false;
             }
 
             return true;
@@ -168,7 +169,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 var translationService = TranslationService.GetInstanceIfConfigured();
                 if (translationService == null)
                 {
-                    throw new ConfigurationErrorsException($"The attribute {attributeList.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
+                    throw new Exception($"The attribute {attributeList.FirstOrDefault(x => x.Attribute.RequireTranslations)?.Attribute} requires translations to be configured but the required app settings is missing from web.config.");
                 }
 
                 return translationService;
@@ -233,9 +234,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
         }
 
         private static ComputerVisionClient Client =>
-            _client ?? (_client = new ComputerVisionClient(new ApiKeyServiceClientCredentials(ComputerVisionApiSubscriptionKey))
+            _client ??= new ComputerVisionClient(new ApiKeyServiceClientCredentials(ComputerVisionApiSubscriptionKey))
             {
                 Endpoint = ComputerVisionEndpoint
-            });
+            };
     }
 }

@@ -4,17 +4,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Configuration;
+using EPiServer.ServiceLocation;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Cache;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation.DTO;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Translation
 {
     public class TranslationService
     {
-        private static readonly string TranslatorSubscriptionKey = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionKey"];
-        private static readonly string TranslatorSubscriptionRegion = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:Translator.SubscriptionRegion"];
+        private static IOptions<AutomaticImageDescriptionOptions> _configuration;
+        private static IOptions<AutomaticImageDescriptionOptions> Configuration => _configuration ??= ServiceLocator.Current.GetInstance<IOptions<AutomaticImageDescriptionOptions>>();
+        private static readonly string TranslatorSubscriptionKey = Configuration.Value.TranslatorSubscriptionKey;
+        private static readonly string TranslatorSubscriptionRegion = Configuration.Value.TranslatorSubscriptionRegion;
         private const string TranslatorEndpoint = "https://api.cognitive.microsofttranslator.com";
         private readonly TranslationCache _cache;
 

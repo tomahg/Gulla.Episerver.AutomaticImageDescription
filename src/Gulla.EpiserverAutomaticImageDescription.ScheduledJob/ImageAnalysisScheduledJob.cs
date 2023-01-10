@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Web.Configuration;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAccess;
@@ -9,14 +8,19 @@ using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
+using Gulla.Episerver.AutomaticImageDescription.Core.Configuration;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
+using Microsoft.Extensions.Options;
 
 namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
 {
     [ScheduledPlugIn(DisplayName = "Analyze all images, update metadata")]
     public class ImageAnalysisScheduledJob : ScheduledJobBase
     {
+        private static IOptions<AutomaticImageDescriptionOptions> _configuration;
+        private static IOptions<AutomaticImageDescriptionOptions> Configuration => _configuration ??= ServiceLocator.Current.GetInstance<IOptions<AutomaticImageDescriptionOptions>>();
+
         private readonly IContentRepository _contentRepository = ServiceLocator.Current.GetInstance<IContentRepository>();
         private IEnumerable<ImageData> _images;
         private int _analyzeCount;
@@ -25,10 +29,11 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
 
         public ImageAnalysisScheduledJob()
         {
-            var appSetting = WebConfigurationManager.AppSettings["Gulla.Episerver.AutomaticImageDescription:ScheduledJob.MaxRequestsPerMinute"];
-            if (appSetting != null)
+            var appSetting = Configuration.Value.ScheduledJobMaxRequestsPerMinute;
+
+            if (appSetting > 0)
             {
-                int.TryParse(appSetting, out _requestsPerMinute);
+                _requestsPerMinute = 0;
             }
 
             IsStoppable = true;
