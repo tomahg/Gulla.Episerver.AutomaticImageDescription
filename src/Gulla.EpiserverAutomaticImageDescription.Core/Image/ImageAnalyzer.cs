@@ -77,7 +77,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             // Image dimensions, min/max
             try
             {
-                var image = System.Drawing.Image.FromStream(stream);
+                var image = SixLabors.ImageSharp.Image.Load(stream);
                 if (image.Width < 50 || image.Height < 50)
                 {
                     image.Dispose();
