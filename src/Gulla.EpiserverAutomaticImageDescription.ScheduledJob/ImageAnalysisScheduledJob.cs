@@ -8,7 +8,7 @@ using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
-using Gulla.Episerver.AutomaticImageDescription.Core.Configuration;
+using Gulla.Episerver.AutomaticImageDescription.Core;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image;
 using Gulla.Episerver.AutomaticImageDescription.Core.Image.Interface;
 using Microsoft.Extensions.Options;
@@ -31,9 +31,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
         {
             var appSetting = Configuration.Value.ScheduledJobMaxRequestsPerMinute;
 
-            if (appSetting > 0)
+            if (appSetting.HasValue)
             {
-                _requestsPerMinute = 0;
+                _requestsPerMinute = appSetting.Value;
             }
 
             IsStoppable = true;
