@@ -1,5 +1,5 @@
 # Creating your own attributes
-New attributes may be created inheriting from the abstract base class `BaseImageDetailsAttribute`. You must then override any of the following attributes, to indicate what kind of resources your attribute needs
+New attributes may be created inheriting from the abstract base class `BaseImageDetailsAttribute`. You must then override one or more of the following attributes, to indicate what kind of resources your attribute needs.
 
 ``` C#
 /// <summary>
@@ -27,35 +27,45 @@ This attribute will analyze the image and check if it's a Clip Art. The attribut
 
 ``` C#
 /// <summary>
-/// Analyze image for gory content. Apply to bool properties for true/false or double/string for gory score.
-/// Gory images show blood/gore.
+/// Analyze the content type of images, indicating whether an image is clip art.
+/// Apply to bool properties for true/false.
+/// Apply to int properties for the likelihood of the image being clip art on a scale of 0 to 3.
+/// Apply to string propertyes for a textual representation of the score.
 /// </summary>
-public class AnalyzeImageForGoryContentAttribute : BaseImageDetailsAttribute
+public class AnalyzeImageForClipArtAttribute : BaseImageDetailsAttribute
 {
     public override bool AnalyzeImageContent => true;
 
     public override void Update(
-        PropertyAccess propertyAccess, 
+        PropertyAccess propertyAccess,
         ImageAnalysis imageAnalyzerResult,
         OcrResult ocrResult,
         TranslationService translationService)
     {
-        if (imageAnalyzerResult.Adult == null)
+        if (imageAnalyzerResult.ImageType == null)
         {
             return;
         }
 
         if (IsBooleanProperty(propertyAccess.Property))
         {
-            propertyAccess.SetValue(imageAnalyzerResult.Adult.IsGoryContent);
+            propertyAccess.SetValue(imageAnalyzerResult.ImageType.ClipArtType > 0);
         }
-        else if (IsDoubleProperty(propertyAccess.Property))
+        else if (IsIntProperty(propertyAccess.Property))
         {
-            propertyAccess.SetValue(imageAnalyzerResult.Adult.GoreScore);
+            propertyAccess.SetValue(imageAnalyzerResult.ImageType.ClipArtType);
         }
         else if (IsStringProperty(propertyAccess.Property))
         {
-            propertyAccess.SetValue(imageAnalyzerResult.Adult.GoreScore.ToString(CultureInfo.InvariantCulture));
+            var clipartType = imageAnalyzerResult.ImageType.ClipArtType switch
+            {
+                1 => "Ambiguous",
+                2 => "Normal-clip-art",
+                3 => "Good-clip-art",
+                _ => "Non-clip-art",
+            };
+
+            propertyAccess.SetValue(clipartType);
         }
     }
 }
