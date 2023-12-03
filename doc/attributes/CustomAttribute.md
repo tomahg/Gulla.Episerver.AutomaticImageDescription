@@ -23,7 +23,7 @@ If you rely on data from the Computer Vision API, override `AnalyzeImageContent`
 Finally implement the `Update` method, where you inspect the image analysis result and update the property decorated with your attribute.
 
 ## An example implementation of a custom attribute
-This attribute will analyze the image and check if it's a Clip Art. The attribute may be added to three different property types.
+This attribute will analyze the image and check if it's a Clip Art. The attribute may be added to three different property types. Refer to the [Computer Vision documentation](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/concept-detecting-image-types)
 
 ``` C#
 /// <summary>
