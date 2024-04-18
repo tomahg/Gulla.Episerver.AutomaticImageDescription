@@ -201,7 +201,6 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
             var details = new List<Details?>
             {
-                Details.Celebrities,
                 Details.Landmarks
             };
 
