@@ -14,6 +14,7 @@ using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 {
@@ -35,16 +36,30 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(imageData, typeof(BaseImageDetailsAttribute)).ToList();
 
                 if (!imagePropertiesWithAnalyzeAttributes.Any() ||
-                    !ImageIsOfSupportedFormat(imageData) ||
                     !ImageIsOfSupportedFileSizeAndDimensions(imageData))
                 {
                     MarkAnalysisAsCompleted(imageData);
                     return false;
                 }
 
+                Stream imageStream = null;
+                if (ImageIsOfSupportedFormat(imageData))
+                {
+                    imageStream = GetImageStream(imageData);
+                }
+                else if (ImageIsOfSupportedFormatWithConversion(imageData))
+                {
+                    imageStream = GetImageStreamWithConversion(imageData);
+                }
+                else
+                {
+                    MarkAnalysisAsCompleted(imageData);
+                    return false;
+                }
+
                 var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
-                var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageData, analyzeAttributes);
-                var ocrResult = GetOcrResultOrDefault(imageData, analyzeAttributes);
+                var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageStream, analyzeAttributes);
+                var ocrResult = GetOcrResultOrDefault(imageStream, analyzeAttributes);
                 var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
 
                 foreach (var attributeContentProperty in analyzeAttributes)
@@ -106,6 +121,11 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             return imageData.Name.ToLower().EndsWith(".jpg") || imageData.Name.ToLower().EndsWith(".jpeg") || imageData.Name.ToLower().EndsWith(".png") || imageData.Name.ToLower().EndsWith(".bmp");
         }
 
+        private static bool ImageIsOfSupportedFormatWithConversion(ImageData imageData)
+        {
+            return imageData.Name.ToLower().EndsWith(".webp");
+        }
+
         private static IEnumerable<ContentProperty> GetPropertiesWithAttribute(IContent content, Type attribute)
         {
             var pageProperties = GetPagePropertiesWithAttribute(content, attribute);
@@ -151,14 +171,14 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             }
         }
 
-        private static ImageAnalysis GetImageAnalysisResultOrDefault(ImageData image, IEnumerable<AttributeContentProperty> attributes)
+        private static ImageAnalysis GetImageAnalysisResultOrDefault(Stream imageStream, IEnumerable<AttributeContentProperty> attributes)
         {
-            return attributes.Any(x => x.Attribute.AnalyzeImageContent) ? AnalyzeImage(GetImageStream(image)) : null;
+            return attributes.Any(x => x.Attribute.AnalyzeImageContent) ? AnalyzeImage(imageStream) : null;
         }
 
-        private static OcrResult GetOcrResultOrDefault(ImageData image, IEnumerable<AttributeContentProperty> attributes)
+        private static OcrResult GetOcrResultOrDefault(Stream imageStream, IEnumerable<AttributeContentProperty> attributes)
         {
-            return attributes.Any(x => x.Attribute.AnalyzeImageOcr) ? OcrAnalyzeImage(GetImageStream(image)) : null;
+            return attributes.Any(x => x.Attribute.AnalyzeImageOcr) ? OcrAnalyzeImage(imageStream) : null;
         }
 
         private static TranslationService GetTranslationServiceOrDefault(IEnumerable<AttributeContentProperty> attributes)
@@ -221,6 +241,15 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
         private static Stream GetImageStream(ImageData image)
         {
             return image.BinaryData.OpenRead();
+        }
+
+        private static Stream GetImageStreamWithConversion(ImageData image)
+        {
+            using var imageSharpImage = SixLabors.ImageSharp.Image.Load(image.BinaryData.OpenRead());
+            var outputStream = new MemoryStream();
+            imageSharpImage.SaveAsPng(outputStream);
+            outputStream.Position = 0; // Reset position to allow stream to be read again
+            return outputStream;
         }
 
         private static void MarkAnalysisAsCompleted(ImageData image)

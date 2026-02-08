@@ -4,11 +4,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>2.2.1</Version>
-    <PackageVersion>2.2.1</PackageVersion>
-    <AssemblyVersion>2.2.1.0</AssemblyVersion>
-    <FileVersion>2.2.1.0</FileVersion>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>2.3.0</Version>
+    <PackageVersion>2.3.0</PackageVersion>
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <FileVersion>2.3.0.0</FileVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Gulla.Episerver.AutomaticImageDescription</PackageId>
     <Title>Gulla.Episerver.AutomaticImageDescription</Title>
@@ -19,7 +19,7 @@
     <RepositoryUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Remove 'celebrities' due to limited access</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for webp and upgrade to .NET 8</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
