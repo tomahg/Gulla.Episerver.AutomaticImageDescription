@@ -15,11 +15,16 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 {
     public static class ImageAnalyzer
     {
+        private static readonly int MaxDimension = 4200;
+        private static readonly int ScaleDownDimension = 1280;
+        private static readonly long MaxFileSize = 4 * 1024 * 1024; // 4MB
+
         private static IOptions<AutomaticImageDescriptionOptions> _configuration;
         private static IOptions<AutomaticImageDescriptionOptions> Configuration => _configuration ??= ServiceLocator.Current.GetInstance<IOptions<AutomaticImageDescriptionOptions>>();
 
@@ -57,6 +62,8 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                     return false;
                 }
 
+                imageStream = ResizeImageStreamIfNeeded(imageStream);
+
                 var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
                 var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageStream, analyzeAttributes);
                 var ocrResult = GetOcrResultOrDefault(imageStream, analyzeAttributes);
@@ -82,14 +89,8 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             var imageBlob = imageData.BinaryData;
 
             using var stream = imageBlob.OpenRead();
-            // Max file size: 4MB
-            if (stream.Length > 4 * 1024 * 1024)
-            {
-                Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (>4MB)");
-                return false;
-            }
 
-            // Image dimensions, min/max
+            // Image dimensions, min
             try
             {
                 var image = SixLabors.ImageSharp.Image.Load(stream);
@@ -97,12 +98,6 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
                 {
                     image.Dispose();
                     Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too small for image analysis (at least one dimension <50px)");
-                    return false;
-                }
-                if (image.Width > 4200 || image.Height > 4200)
-                {
-                    image.Dispose();
-                    Log.Debug($"The image '{imageData.Name}' with content id '{imageData.ContentLink.ID}' is too large for image analysis (at least one dimension >4200px)");
                     return false;
                 }
                 image.Dispose();
@@ -243,7 +238,60 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             return image.BinaryData.OpenRead();
         }
 
-        private static Stream GetImageStreamWithConversion(ImageData image)
+
+        private static Stream ResizeImageStreamIfNeeded(Stream imageStream)
+        {
+            var needsProcessing = false;
+
+            if (imageStream.CanSeek && imageStream.Length > MaxFileSize)
+            {
+                needsProcessing = true;
+            }
+
+            using var imageSharpImage = SixLabors.ImageSharp.Image.Load(imageStream);
+
+            if (imageSharpImage.Width > MaxDimension || imageSharpImage.Height > MaxDimension)
+            {
+                needsProcessing = true;
+
+                var ratioX = (double)ScaleDownDimension / imageSharpImage.Width;
+                var ratioY = (double)ScaleDownDimension / imageSharpImage.Height;
+                var ratio = Math.Min(ratioX, ratioY);
+
+                var newWidth = (int)(imageSharpImage.Width * ratio);
+                var newHeight = (int)(imageSharpImage.Height * ratio);
+
+                imageSharpImage.Mutate(x => x.Resize(newWidth, newHeight));
+            }
+
+            if (!needsProcessing)
+            {
+                if (imageStream.CanSeek)
+                {
+                    imageStream.Position = 0;
+                    return imageStream;
+                }
+            }
+
+            var outputStream = new MemoryStream();
+            imageSharpImage.SaveAsPng(outputStream);
+
+            while (outputStream.Length > MaxFileSize)
+            {
+                var newWidth = (int)(imageSharpImage.Width * 0.75);
+                var newHeight = (int)(imageSharpImage.Height * 0.75);
+
+                imageSharpImage.Mutate(x => x.Resize(newWidth, newHeight));
+                outputStream.SetLength(0);
+                imageSharpImage.SaveAsPng(outputStream);
+            }
+
+            imageStream.Dispose();
+            outputStream.Position = 0;
+            return outputStream;
+        }
+
+        private static MemoryStream GetImageStreamWithConversion(ImageData image)
         {
             using var imageSharpImage = SixLabors.ImageSharp.Image.Load(image.BinaryData.OpenRead());
             var outputStream = new MemoryStream();

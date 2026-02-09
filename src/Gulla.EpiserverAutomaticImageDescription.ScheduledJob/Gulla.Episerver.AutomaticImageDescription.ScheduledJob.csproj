@@ -5,10 +5,10 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>2.3.0</Version>
-    <PackageVersion>2.3.0</PackageVersion>
-    <AssemblyVersion>2.3.0.0</AssemblyVersion>
-    <FileVersion>2.3.0.0</FileVersion>
+    <Version>2.4.0</Version>
+    <PackageVersion>2.4.0</PackageVersion>
+    <AssemblyVersion>2.4.0.0</AssemblyVersion>
+    <FileVersion>2.4.0.0</FileVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</PackageId>
     <Title>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</Title>
@@ -19,11 +19,11 @@
     <RepositoryUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Upgrade to .NET 8</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for larger image dimensions</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gulla.Episerver.AutomaticImageDescription" Version="2.3.0" />
+    <PackageReference Include="Gulla.Episerver.AutomaticImageDescription" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
