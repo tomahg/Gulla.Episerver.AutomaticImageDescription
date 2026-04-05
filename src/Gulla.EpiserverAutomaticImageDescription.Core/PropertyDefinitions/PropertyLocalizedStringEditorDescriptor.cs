@@ -4,8 +4,8 @@ using EPiServer.Shell.ObjectEditing.EditorDescriptors;
 
 namespace Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions
 {
-    [EditorDescriptorRegistration(TargetType = typeof(IList<PropertyDefinitions.LocalizedString>))]
-    public class PropertyLocalizedStringEditorDescriptor : CollectionEditorDescriptor<PropertyDefinitions.LocalizedString>
+    [EditorDescriptorRegistration(TargetType = typeof(IList<LocalizedString>))]
+    public class PropertyLocalizedStringEditorDescriptor : CollectionEditorDescriptor<LocalizedString>
     {
 
     }

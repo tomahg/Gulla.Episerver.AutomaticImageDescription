@@ -57,7 +57,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         {
             if (!string.IsNullOrEmpty(_languageCode) && _languageCode != TranslationLanguage.English && !string.IsNullOrEmpty(description))
             {
-                description = translationService.TranslateText(new[] { description }, _languageCode, TranslationLanguage.English).First();
+                description = translationService.TranslateText([description], _languageCode, TranslationLanguage.English).First();
             }
 
             return FormatDescription(description, _upperCaseFirstLetter, _endWithDot);
@@ -76,7 +76,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
                 return new LocalizedString { Language = TranslationLanguage.English, Value = formattedDescription };
             }
 
-            var translatedDescription = translationService.TranslateText(new[] { description }, languageCode, TranslationLanguage.English).First();
+            var translatedDescription = translationService.TranslateText([description], languageCode, TranslationLanguage.English).First();
             var formattedTranslatedDescription = FormatDescription(translatedDescription, _upperCaseFirstLetter, _endWithDot);
             return new LocalizedString { Language = languageCode, Value = formattedTranslatedDescription };
         }
@@ -98,7 +98,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 
         private IEnumerable<string> GetLanguageCodes()
         {
-            var languageCodes = _languageCode?.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var languageCodes = _languageCode?.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries).ToList();
             if (_languageCode == TranslationLanguage.AllActive || languageCodes?.Any() != true)
             {
                 languageCodes = new LanguageSelectionFactory().GetSelections(null).Select(x => x.Value as string).ToList();

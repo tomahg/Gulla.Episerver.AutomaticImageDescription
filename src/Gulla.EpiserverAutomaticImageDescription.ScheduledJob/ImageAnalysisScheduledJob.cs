@@ -4,7 +4,6 @@ using System.Threading;
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.DataAccess;
-using EPiServer.PlugIn;
 using EPiServer.Scheduler;
 using EPiServer.Security;
 using EPiServer.ServiceLocation;
@@ -15,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
 {
-    [ScheduledPlugIn(DisplayName = "Analyze all images, update metadata")]
+    [ScheduledJob(DisplayName = "Analyze all images, update metadata")]
     public class ImageAnalysisScheduledJob : ScheduledJobBase
     {
         private static IOptions<AutomaticImageDescriptionOptions> _configuration;
@@ -71,8 +70,8 @@ namespace Gulla.Episerver.AutomaticImageDescription.ScheduledJob
 
         private IEnumerable<ImageData> GetAllImages()
         {
-            var contentImages = GetImages(EPiServer.Web.SiteDefinition.Current.ContentAssetsRoot);
-            var globalImages = GetImages(EPiServer.Web.SiteDefinition.Current.GlobalAssetsRoot);
+            var contentImages = GetImages(EPiServer.Web.SystemDefinition.Current.ContentAssetsRoot);
+            var globalImages = GetImages(EPiServer.Web.SystemDefinition.Current.GlobalAssetsRoot);
             return contentImages.Union(globalImages);
         }
 

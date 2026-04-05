@@ -4,11 +4,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Version>2.4.0</Version>
-    <PackageVersion>2.4.0</PackageVersion>
-    <AssemblyVersion>2.4.0.0</AssemblyVersion>
-    <FileVersion>2.4.0.0</FileVersion>
+    <TargetFramework>net10.0</TargetFramework>
+    <Version>3.0.0</Version>
+    <PackageVersion>3.0.0</PackageVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</PackageId>
     <Title>Gulla.Episerver.AutomaticImageDescription.ScheduledJob</Title>
@@ -19,15 +19,15 @@
     <RepositoryUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Add support for larger image dimensions</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to .NET 10 and add support for CMS 13</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Gulla.Episerver.AutomaticImageDescription" Version="2.4.0" />
+    <PackageReference Include="Gulla.Episerver.AutomaticImageDescription" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS.Core" Version="[12.0.3, 13.0.0)" />
+    <PackageReference Include="EPiServer.CMS.Core" Version="[13.0.0, 14.0.0)" />
   </ItemGroup>
 
   <ItemGroup>
