@@ -1,6 +1,6 @@
 # Gulla.Episerver.AutomaticImageDescription for CMS 12
 
-This is the readme for the CMS 12 version, the version for CMS 11 is [over here](https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/tree/cms11).
+This is the readme for the CMS 12 version, the version for CMS 11 is [over here](https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/tree/cms11) and the version for CMS 13 is [over here](https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/tree/master).
 
 ## Automatic metadata for images in Episerver/Optimizely
 This addon will use Microsoft Azure Cognitive Services, Computer Vision API in combination with Translator Text API, to generate various metadata for images uploaded in Episerver/Optimizely CMS.
