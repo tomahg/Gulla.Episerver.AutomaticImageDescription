@@ -29,4 +29,4 @@ If your site have more than one language, you probably want metadata in more tha
 Visit the [Localization section](doc/Localization.md) to learn more.
 
 ## More information
-Check [this blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
+Check [this blog post](https://www.gulla.net/en/blog/automatic-alt-text-for-images-using-optimizely-cms-12/) or [this slightly older blog post](https://www.gulla.net/en/blog/episerver-automatic-image-metadata/).
