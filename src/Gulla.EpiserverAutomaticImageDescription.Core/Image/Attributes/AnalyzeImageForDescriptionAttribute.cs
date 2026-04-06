@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EPiServer.Logging;
 using Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Constants;
@@ -13,6 +14,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
     /// </summary>
     public class AnalyzeImageForDescriptionAttribute : BaseImageDetailsAttribute
     {
+        private static readonly ILogger Log = LogManager.GetLogger(typeof(AnalyzeImageForDescriptionAttribute));
         private readonly string _languageCode;
         private readonly bool _upperCaseFirstLetter;
         private readonly bool _endWithDot;
@@ -57,7 +59,15 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         {
             if (!string.IsNullOrEmpty(_languageCode) && _languageCode != TranslationLanguage.English && !string.IsNullOrEmpty(description))
             {
-                description = translationService.TranslateText([description], _languageCode, TranslationLanguage.English).First();
+                try
+                {
+                    description = translationService.TranslateText([description], _languageCode, TranslationLanguage.English).First();
+                }
+                catch (Exception e)
+                {
+                    var message = (e as AggregateException)?.InnerException?.Message ?? e.Message;
+                    Log.Warning($"Failed to translate description to language '{_languageCode}', skipping translation. {message}");
+                }
             }
 
             return FormatDescription(description, _upperCaseFirstLetter, _endWithDot);
@@ -65,7 +75,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 
         private IEnumerable<LocalizedString> GetTranslatedLocalizedStrings(string description, IEnumerable<string> languageCodes, TranslationService translationService)
         {
-            return languageCodes.Select(languageCode => GetTranslatedLocalizedString(description, languageCode, translationService)).ToList();
+            return languageCodes.Select(languageCode => GetTranslatedLocalizedString(description, languageCode, translationService)).Where(x => x != null).ToList();
         }
 
         private LocalizedString GetTranslatedLocalizedString(string description, string languageCode, TranslationService translationService)
@@ -76,9 +86,18 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
                 return new LocalizedString { Language = TranslationLanguage.English, Value = formattedDescription };
             }
 
-            var translatedDescription = translationService.TranslateText([description], languageCode, TranslationLanguage.English).First();
-            var formattedTranslatedDescription = FormatDescription(translatedDescription, _upperCaseFirstLetter, _endWithDot);
-            return new LocalizedString { Language = languageCode, Value = formattedTranslatedDescription };
+            try
+            {
+                var translatedDescription = translationService.TranslateText([description], languageCode, TranslationLanguage.English).First();
+                var formattedTranslatedDescription = FormatDescription(translatedDescription, _upperCaseFirstLetter, _endWithDot);
+                return new LocalizedString { Language = languageCode, Value = formattedTranslatedDescription };
+            }
+            catch (Exception e)
+            {
+                var message = (e as AggregateException)?.InnerException?.Message ?? e.Message;
+                Log.Warning($"Failed to translate description to language '{languageCode}', using original value. {message}");
+                return new LocalizedString { Language = languageCode, Value = FormatDescription(description, _upperCaseFirstLetter, _endWithDot) };
+            }
         }
 
         private static string FormatDescription(string description, bool upperCaseFirstLetter, bool endWithDot)

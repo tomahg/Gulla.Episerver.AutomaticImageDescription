@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EPiServer.Logging;
 using Gulla.Episerver.AutomaticImageDescription.Core.PropertyDefinitions;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation;
 using Gulla.Episerver.AutomaticImageDescription.Core.Translation.Constants;
@@ -14,6 +15,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
     /// </summary>
     public class AnalyzeImageForTagsAttribute : BaseImageDetailsAttribute
     {
+        private static readonly ILogger Log = LogManager.GetLogger(typeof(AnalyzeImageForTagsAttribute));
         private readonly string _languageCode;
 
         /// <summary>
@@ -60,37 +62,69 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
 
         private IEnumerable<string> GetTranslatedTags(IEnumerable<string> tags, TranslationService translationService)
         {
-            return _languageCode == null ? tags : translationService.TranslateText(tags, _languageCode, TranslationLanguage.English);
+            if (_languageCode == null)
+            {
+                return tags;
+            }
+
+            try
+            {
+                return translationService.TranslateText(tags, _languageCode, TranslationLanguage.English);
+            }
+            catch (Exception e)
+            {
+                var message = (e as AggregateException)?.InnerException?.Message ?? e.Message;
+                Log.Warning($"Failed to translate tags to language '{_languageCode}', returning untranslated tags. {message}");
+                return tags;
+            }
         }
 
-        private static IEnumerable<LocalizedString> GetTranslatedLocalizedStrings(IList<string> tags, IEnumerable<string> languageCodes, TranslationService translationService)
+        private IEnumerable<LocalizedString> GetTranslatedLocalizedStrings(IList<string> tags, IEnumerable<string> languageCodes, TranslationService translationService)
         {
-            return languageCodes.Select(languageCode => GetTranslatedLocalizedString(tags, languageCode, translationService)).ToList();
+            return languageCodes.Select(languageCode => GetTranslatedLocalizedString(tags, languageCode, translationService)).Where(x => x != null).ToList();
         }
 
-        private static LocalizedString GetTranslatedLocalizedString(IEnumerable<string> tags, string languageCode, TranslationService translationService)
+        private LocalizedString GetTranslatedLocalizedString(IEnumerable<string> tags, string languageCode, TranslationService translationService)
         {
             if (languageCode == TranslationLanguage.English)
             {
                 return new LocalizedString { Language = TranslationLanguage.English, Value = string.Join(", ", tags) };
             }
 
-            return new LocalizedString { Language = languageCode, Value = string.Join(", " , GetTranslatedTags(translationService, tags, languageCode)) };
+            try
+            {
+                return new LocalizedString { Language = languageCode, Value = string.Join(", ", GetTranslatedTags(translationService, tags, languageCode)) };
+            }
+            catch (Exception e)
+            {
+                var message = (e as AggregateException)?.InnerException?.Message ?? e.Message;
+                Log.Warning($"Failed to translate tags to language '{languageCode}', using original value. {message}");
+                return new LocalizedString { Language = languageCode, Value = string.Join(", ", tags) };
+            }
         }
 
-        private static IEnumerable<LocalizedStringList> GetTranslatedLocalizedStringLists(IList<string> tags, IEnumerable<string> languageCodes, TranslationService translationService)
+        private IEnumerable<LocalizedStringList> GetTranslatedLocalizedStringLists(IList<string> tags, IEnumerable<string> languageCodes, TranslationService translationService)
         {
-            return languageCodes.Select(languageCode => GetTranslatedLocalizedStringList(tags, languageCode, translationService)).ToList();
+            return languageCodes.Select(languageCode => GetTranslatedLocalizedStringList(tags, languageCode, translationService)).Where(x => x != null).ToList();
         }
 
-        private static LocalizedStringList GetTranslatedLocalizedStringList(IList<string> tags, string languageCode, TranslationService translationService)
+        private LocalizedStringList GetTranslatedLocalizedStringList(IList<string> tags, string languageCode, TranslationService translationService)
         {
             if (languageCode == TranslationLanguage.English)
             {
                 return new LocalizedStringList { Language = TranslationLanguage.English, Value = tags };
             }
 
-            return new LocalizedStringList { Language = languageCode, Value = GetTranslatedTags(translationService, tags, languageCode).ToList() };
+            try
+            {
+                return new LocalizedStringList { Language = languageCode, Value = GetTranslatedTags(translationService, tags, languageCode).ToList() };
+            }
+            catch (Exception e)
+            {
+                var message = (e as AggregateException)?.InnerException?.Message ?? e.Message;
+                Log.Warning($"Failed to translate tags to language '{languageCode}', using original value. {message}");
+                return new LocalizedStringList { Language = languageCode, Value = tags };
+            }
         }
 
         private static IEnumerable<string> GetTranslatedTags(TranslationService translationService, IEnumerable<string> tags, string toLanguage)
