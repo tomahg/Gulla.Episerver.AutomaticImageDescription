@@ -1,5 +1,5 @@
 # [AnalyzeImageForOcr]
-This attribute will use OCR ([Optical Character Recognition](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/overview-ocr#ocr-optical-character-recognition-api)) to identify words written in the image. It is not optimized for large documents but can recognize [quite a few languages](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/language-support#text-recognition).
+This attribute will use OCR ([Optical Character Recognition](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/overview-ocr)) to identify words written in the image. It uses the Azure Image Analysis 4.0 Read feature, which recognizes both printed and handwritten text in [many languages](https://learn.microsoft.com/en-us/azure/ai-services/computer-vision/language-support). It is optimized for general images rather than large, text-heavy documents.
 
 May be added to the following property types:
 

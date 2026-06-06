@@ -33,7 +33,7 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         /// <param name="imageAnalyzerResult">ImageAnalyzer result.</param>
         /// <param name="ocrResult"> OCR result.</param>
         /// <param name="translationService">Service for translating text. Will be null if translation is not configured in app settings.</param>
-        public abstract void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService);
+        public abstract void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, ReadResult readResult, TranslationService translationService);
 
         protected static bool IsBooleanProperty(PropertyInfo propertyInfo)
         {

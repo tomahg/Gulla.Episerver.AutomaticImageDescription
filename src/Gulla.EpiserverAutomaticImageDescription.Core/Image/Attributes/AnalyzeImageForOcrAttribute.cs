@@ -31,14 +31,14 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
         public override bool AnalyzeImageOcr => true;
         public override bool RequireTranslations => _toLanguageCode != null;
 
-        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, OcrResult ocrResult, TranslationService translationService)
+        public override void Update(PropertyAccess propertyAccess, ImageAnalysis imageAnalyzerResult, ReadResult readResult, TranslationService translationService)
         {
-            if (ocrResult.Regions == null || ocrResult.Regions.Count == 0)
+            if (readResult?.Blocks == null || readResult.Blocks.Count == 0)
             {
                 return;
             }
 
-            var ocrTranslated = GetTranslatedOcr(ocrResult, translationService);
+            var ocrTranslated = GetTranslatedOcr(readResult, translationService);
 
             if (IsStringProperty(propertyAccess.Property))
             {
@@ -46,9 +46,9 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image.Attributes
             }
         }
 
-        private IEnumerable<string> GetTranslatedOcr(OcrResult ocrResult, TranslationService translationService)
+        private IEnumerable<string> GetTranslatedOcr(ReadResult readResult, TranslationService translationService)
         {
-            var words = ocrResult.Regions.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text).ToList();
+            var words = readResult.Blocks.Select(x => x.Lines).SelectMany(x => x).Select(x => x.Words).SelectMany(x => x).Select(x => x.Text).ToList();
             if (_toLanguageCode == null || words.Count == 0)
             {
                 return words;

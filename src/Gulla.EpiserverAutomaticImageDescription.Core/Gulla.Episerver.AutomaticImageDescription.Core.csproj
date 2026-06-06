@@ -5,10 +5,10 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Version>3.1.0</Version>
-    <PackageVersion>3.1.0</PackageVersion>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
+    <Version>4.0.0</Version>
+    <PackageVersion>4.0.0</PackageVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Gulla.Episerver.AutomaticImageDescription</PackageId>
     <Title>Gulla.Episerver.AutomaticImageDescription</Title>
@@ -19,11 +19,12 @@
     <RepositoryUrl>https://github.com/tomahg/Gulla.Episerver.AutomaticImageDescription/</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes>Handle unsupported translation languages gracefully</PackageReleaseNotes>
+    <PackageReleaseNotes>Migrate OCR from the retired RecognizePrintedText API to Azure Image Analysis 4.0 Read</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS.UI.Core" Version="[13.0.0, 14.0.0)" />
+    <PackageReference Include="Azure.AI.Vision.ImageAnalysis" Version="[1.0.0, 2.0.0)" />
+    <PackageReference Include="EPiServer.CMS.UI.Core" Version="[13.0.1, 14.0.0)" />
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision" Version="[7.0.1, 8.0.0)" />
   </ItemGroup>
 

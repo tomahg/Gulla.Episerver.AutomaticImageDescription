@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Azure;
+using Azure.AI.Vision.ImageAnalysis;
 using EPiServer.Core;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
@@ -64,15 +66,21 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
                 imageStream = ResizeImageStreamIfNeeded(imageStream);
 
+                byte[] imageBytes;
+                using (imageStream)
+                {
+                    imageBytes = ToByteArray(imageStream);
+                }
+
                 var analyzeAttributes = GetAttributeContentPropertyList(imagePropertiesWithAnalyzeAttributes).ToList();
-                var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageStream, analyzeAttributes);
-                var ocrResult = GetOcrResultOrDefault(imageStream, analyzeAttributes);
+                var imageAnalysisResult = GetImageAnalysisResultOrDefault(imageBytes, analyzeAttributes);
+                var readResult = GetOcrResultOrDefault(imageBytes, analyzeAttributes);
                 var translationService = GetTranslationServiceOrDefault(analyzeAttributes);
 
                 foreach (var attributeContentProperty in analyzeAttributes)
                 {
                     var propertyAccess = new PropertyAccess(imageData, attributeContentProperty.Content, attributeContentProperty.Property);
-                    attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, ocrResult, translationService);
+                    attributeContentProperty.Attribute.Update(propertyAccess, imageAnalysisResult, readResult, translationService);
                 }
             }
             catch (Exception e)
@@ -166,14 +174,14 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             }
         }
 
-        private static ImageAnalysis GetImageAnalysisResultOrDefault(Stream imageStream, IEnumerable<AttributeContentProperty> attributes)
+        private static ImageAnalysis GetImageAnalysisResultOrDefault(byte[] imageBytes, IEnumerable<AttributeContentProperty> attributes)
         {
-            return attributes.Any(x => x.Attribute.AnalyzeImageContent) ? AnalyzeImage(imageStream) : null;
+            return attributes.Any(x => x.Attribute.AnalyzeImageContent) ? AnalyzeImage(imageBytes) : null;
         }
 
-        private static OcrResult GetOcrResultOrDefault(Stream imageStream, IEnumerable<AttributeContentProperty> attributes)
+        private static ReadResult GetOcrResultOrDefault(byte[] imageBytes, IEnumerable<AttributeContentProperty> attributes)
         {
-            return attributes.Any(x => x.Attribute.AnalyzeImageOcr) ? OcrAnalyzeImage(imageStream) : null;
+            return attributes.Any(x => x.Attribute.AnalyzeImageOcr) ? OcrAnalyzeImage(imageBytes) : null;
         }
 
         private static TranslationService GetTranslationServiceOrDefault(IEnumerable<AttributeContentProperty> attributes)
@@ -193,15 +201,11 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             return null;
         }
 
-        private static ImageAnalysis AnalyzeImage(Stream image)
+        private static ImageAnalysis AnalyzeImage(byte[] imageBytes)
         {
-            // Always reset stream position before analyzing.
-            if (image.CanSeek)
-            {
-                image.Position = 0;
-            }
-
-            var task = Task.Run(() => AnalyzeImageFeatures(image));
+            // Each Azure SDK call gets its own stream over the buffered bytes; the SDK is free to
+            // dispose the stream it is handed without affecting any other call.
+            var task = Task.Run(() => AnalyzeImageFeatures(new MemoryStream(imageBytes)));
             return task.Result;
         }
 
@@ -228,26 +232,41 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             return await Client.AnalyzeImageInStreamAsync(image, features, details);
         }
 
-        private static OcrResult OcrAnalyzeImage(Stream image)
+        private static ReadResult OcrAnalyzeImage(byte[] imageBytes)
         {
-            // Always reset stream position before analyzing.
-            if (image.CanSeek)
-            {
-                image.Position = 0;
-            }
-
-            var task = Task.Run(() => OcrAnalyzeImageStream(image));
-            return task.Result;
+            return ReadClient.Analyze(BinaryData.FromBytes(imageBytes), VisualFeatures.Read).Value.Read;
         }
 
-        private static async Task<OcrResult> OcrAnalyzeImageStream(Stream image)
+        private static byte[] ToByteArray(Stream stream)
         {
-            return await Client.RecognizePrintedTextInStreamAsync(true, image);
+            if (stream is MemoryStream memoryStream)
+            {
+                return memoryStream.ToArray();
+            }
+
+            using var buffer = new MemoryStream();
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
+            stream.CopyTo(buffer);
+            return buffer.ToArray();
         }
 
         private static Stream GetImageStream(ImageData image)
         {
-            return image.BinaryData.OpenRead();
+            // Buffer the blob into memory so downstream readers (ImageSharp, then OCR) can each
+            // seek back and re-read. The Azure blob LazyLoadingReadOnlyStream is read only once here;
+            // it does not reliably support being re-read after it has been consumed.
+            var memoryStream = new MemoryStream();
+            using (var blobStream = image.BinaryData.OpenRead())
+            {
+                blobStream.CopyTo(memoryStream);
+            }
+
+            memoryStream.Position = 0;
+            return memoryStream;
         }
 
 
@@ -326,5 +345,10 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             {
                 Endpoint = ComputerVisionEndpoint
             };
+
+        private static ImageAnalysisClient _readClient;
+
+        private static ImageAnalysisClient ReadClient =>
+            _readClient ??= new ImageAnalysisClient(new Uri(ComputerVisionEndpoint), new AzureKeyCredential(ComputerVisionApiSubscriptionKey));
     }
 }
