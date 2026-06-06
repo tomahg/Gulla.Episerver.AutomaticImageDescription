@@ -195,6 +195,12 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
         private static ImageAnalysis AnalyzeImage(Stream image)
         {
+            // Always reset stream position before analyzing.
+            if (image.CanSeek)
+            {
+                image.Position = 0;
+            }
+
             var task = Task.Run(() => AnalyzeImageFeatures(image));
             return task.Result;
         }
@@ -224,6 +230,12 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
 
         private static OcrResult OcrAnalyzeImage(Stream image)
         {
+            // Always reset stream position before analyzing.
+            if (image.CanSeek)
+            {
+                image.Position = 0;
+            }
+
             var task = Task.Run(() => OcrAnalyzeImageStream(image));
             return task.Result;
         }
