@@ -42,8 +42,19 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             {
                 var imagePropertiesWithAnalyzeAttributes = GetPropertiesWithAttribute(imageData, typeof(BaseImageDetailsAttribute)).ToList();
 
-                if (!imagePropertiesWithAnalyzeAttributes.Any() ||
-                    !ImageIsOfSupportedFileSizeAndDimensions(imageData))
+                if (!imagePropertiesWithAnalyzeAttributes.Any())
+                {
+                    MarkAnalysisAsCompleted(imageData);
+                    return false;
+                }
+
+                if (imageData.BinaryData == null)
+                {
+                    Log.Warning($"The image '{imageData.Name}' with content id '{imageData.ContentLink?.ID}' has no binary data, skipping image analysis");
+                    return false;
+                }
+
+                if (!ImageIsOfSupportedFileSizeAndDimensions(imageData))
                 {
                     MarkAnalysisAsCompleted(imageData);
                     return false;
@@ -85,7 +96,8 @@ namespace Gulla.Episerver.AutomaticImageDescription.Core.Image
             }
             catch (Exception e)
             {
-                Log.Error($"Error analyzing image '{imageData.Name}' with content id '{imageData.ContentLink.ID}'", e);
+                Log.Error($"Error analyzing image '{imageData.Name}' with content id '{imageData.ContentLink?.ID}'", e);
+                return false;
             }
 
             MarkAnalysisAsCompleted(imageData);
